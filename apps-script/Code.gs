@@ -270,7 +270,7 @@ function buildPlan_(pl, plan) {
   pl.getRange(2, C.notes, n, 1).setBackground(YELLOW);
   [90, 50, 100, 45, 160, 380, 75, 50, 190, 55, 75, 75, 60, 65, 65, 220, 70, 70, 110].forEach((w, i) => pl.setColumnWidth(i + 1, w));
   pl.hideColumns(C.key, 3);
-  pl.setFrozenRows(1); pl.setFrozenColumns(5);
+  pl.setFrozenRows(1); pl.setFrozenColumns(1);
   pl.getRange(2, C.done, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Yes', 'No'], true).setAllowInvalid(false).build());
   pl.getRange(2, C.feel, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireNumberBetween(1, 5).setAllowInvalid(false).setHelpText('1 very easy to 5 very hard').build());
   pl.getRange(2, C.hr, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireNumberBetween(60, 230).setAllowInvalid(false).build());
