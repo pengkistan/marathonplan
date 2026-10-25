@@ -157,6 +157,10 @@ function openApp_() {
 function setup() {
   const ss = SpreadsheetApp.getActive();
   PropertiesService.getScriptProperties().setProperty('SHEET_ID', ss.getId());
+  // Formulas below use English names and commas, so the sheet uses the US number format.
+  ss.setSpreadsheetLocale('en_US');
+  ss.setSpreadsheetTimeZone('Asia/Makassar');
+  SpreadsheetApp.flush();
   const plan = JSON.parse(UrlFetchApp.fetch(PLAN_URL).getContentText());
 
   // keep anything already logged
@@ -242,8 +246,7 @@ function buildPlan_(pl, plan) {
   const keyOf = s => s.type === 'R' ? (s.detail.indexOf('300 m') >= 0 ? 'R 300 m' : 'R 200 m')
     : ({ T: 'T pace', I: 'I pace', M: 'M pace', HM: 'HM pace', E: 'E', REC: 'REC', L: 'L' }[s.pace] || '');
   const vals = S.map(s => {
-    const p = s.date.split('-').map(Number);
-    return [new Date(p[0], p[1] - 1, p[2]), s.week, PHASE[s.phase], s.day, s.title, s.detail, s.type === 'REST' ? '' : s.km];
+    return [s.date, s.week, PHASE[s.phase], s.day, s.title, s.detail, s.type === 'REST' ? '' : s.km];
   });
   pl.getRange(2, 1, n, 7).setValues(vals);
   pl.getRange(2, C.key, n, 3).setValues(S.map(s => [keyOf(s), s.id, '']));
@@ -286,8 +289,8 @@ function buildWeekly_(wk, plan, last) {
   wk.getRange('A2').setValue('Updates from the Done and Actual km columns on the Plan sheet. Week 15 includes the race (21.1 km).').setFontSize(9).setFontColor(MUTED);
   const heads = ['Week', 'Phase', 'From', 'To', 'Planned km', 'Runs planned', 'Runs done', 'Logged km', 'Logged / planned'];
   wk.getRange(4, 1, 1, heads.length).setValues([heads]); head_(wk.getRange(4, 1, 1, heads.length));
-  const W = plan.weeks, d = s => { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
-  wk.getRange(5, 1, W.length, 4).setValues(W.map(w => [w.week, PHASE[w.phase], d(w.start), d(w.end)]));
+  const W = plan.weeks;
+  wk.getRange(5, 1, W.length, 4).setValues(W.map(w => [w.week, PHASE[w.phase], w.start, w.end]));
   wk.getRange(5, 5, W.length, 5).setFormulas(W.map((_, i) => {
     const r = i + 5;
     return [`=SUMIFS(Plan!$G$2:$G$${last},Plan!$B$2:$B$${last},A${r})`,
