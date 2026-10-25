@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Half Marathon Plan</title>
+<meta name="description" content="Daily training plan and log for the Feb 6, 2027 half marathon.">
+<meta name="theme-color" content="#EDF0F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141C33" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#16213A; --fog:#EDF0F5; --paper:#FFFFFF; --line:#D5DBE6; --muted:#5B667E;
+  --lagoon:#237A7F; --deep:#1A6266; --dawn:#E39B2D; --coral:#C94A26; --hibiscus:#B4306A; --stone:#9AA3B5; --band-ink:#FFFFFF;
+  --bg:var(--fog); --ink:var(--night); --card:var(--paper); --soft:#E3E8F0; --pin:#C9D0DC;
+  --focus:#2E6BE6;
+  --display:'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --body:'Atkinson Hyperlegible', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141C33; --ink:#E8ECF4; --card:#1D2742; --soft:#26314F; --line:#33405F; --muted:#A3AEC6; --pin:#3A4768;
+    --lagoon:#4FB3B8; --deep:#3E9EA3; --dawn:#F2B04C; --coral:#F07A55; --hibiscus:#E2649A; --stone:#7C88A3; --focus:#7FA7FF; --band-ink:#141C33;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141C33; --ink:#E8ECF4; --card:#1D2742; --soft:#26314F; --line:#33405F; --muted:#A3AEC6; --pin:#3A4768;
+  --lagoon:#4FB3B8; --deep:#3E9EA3; --dawn:#F2B04C; --coral:#F07A55; --hibiscus:#E2649A; --stone:#7C88A3; --focus:#7FA7FF; --band-ink:#141C33;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom));}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px}
+.num{font-variant-numeric:tabular-nums lining-nums}
+
+/* Header */
+.top{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0 10px}
+.top h1{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.01em;margin:0;line-height:1}
+.count{color:var(--muted);font-size:15px}
+.count b{color:var(--ink);font-size:17px}
+
+/* Week strip */
+.strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:6px 0 16px}
+.strip button{appearance:none;border:0;background:transparent;padding:6px 0 8px;border-radius:10px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:13px}
+.strip button .d{font-size:16px;color:var(--ink);font-weight:700}
+.strip button .bar{width:70%;height:6px;border-radius:3px;background:var(--soft)}
+.strip button.sel{background:var(--card);box-shadow:0 0 0 1.5px var(--line) inset}
+.strip button.today .d{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:2px}
+.strip button .tick{height:14px;font-size:12px;line-height:14px;color:var(--lagoon);font-weight:700}
+
+/* Intensity colours */
+.k-REST{--k:var(--stone)} .k-REC,.k-E{--k:var(--lagoon)} .k-L,.k-LM,.k-LHM{--k:var(--deep)}
+.k-HM,.k-REH,.k-RACE{--k:var(--dawn)} .k-T{--k:var(--coral)} .k-I,.k-R,.k-TEST{--k:var(--hibiscus)}
+.strip button .bar{background:var(--k,var(--soft))}
+.strip button.k-REST .bar{background:var(--soft)}
+
+/* Bib */
+.bib{position:relative;background:var(--card);border-radius:10px;overflow:hidden;
+  box-shadow:0 1px 0 var(--line), 0 10px 30px -18px rgba(22,33,58,.45)}
+.bib .band{background:var(--k);color:var(--band-ink);display:flex;justify-content:space-between;align-items:center;
+  padding:9px 18px 8px 18px;font-size:14px;font-weight:700;letter-spacing:.02em}
+.bib.k-REST .band,.bib.k-HM .band,.bib.k-REH .band,.bib.k-RACE .band{color:#141C33}
+.bib .pin{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 2px var(--pin)}
+.bib .pin.a{left:9px;top:46px}.bib .pin.b{right:9px;top:46px}.bib .pin.c{left:9px;bottom:9px}.bib .pin.d{right:9px;bottom:9px}
+.bib .body{padding:16px 26px 22px}
+.bib .date{color:var(--muted);font-size:15px;margin:0}
+.bib h2{font-family:var(--display);font-weight:800;font-size:clamp(44px,13vw,64px);line-height:.92;margin:4px 0 12px;letter-spacing:.005em}
+.pace{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;margin:0 0 14px}
+.pace .big{font-size:34px;font-weight:700;line-height:1}
+.pace .unit{font-size:15px;color:var(--muted)}
+.pace .lab{font-size:15px;font-weight:700;color:var(--k)}
+.hr{font-size:15px;color:var(--muted);margin:0 0 14px}
+.steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s}
+.steps li{position:relative;padding:8px 0 8px 30px;border-top:1px solid var(--line)}
+.steps li:last-child{border-bottom:1px solid var(--line)}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:9px;width:20px;height:20px;border-radius:50%;
+  background:var(--soft);font-size:12px;font-weight:700;display:grid;place-items:center}
+.steps.one li{padding-left:0}.steps.one li::before{display:none}
+.steps strong{color:var(--k);white-space:nowrap}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.chip{font-size:14px;padding:4px 10px;border-radius:999px;background:var(--soft)}
+.chip a{color:inherit}
+.actions{display:flex;gap:10px}
+.btn{appearance:none;border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;min-height:48px}
+.btn.primary{background:var(--ink);color:var(--card);flex:1}
+.btn.ghost{background:var(--soft);color:var(--ink)}
+.btn.small{min-height:40px;padding:8px 12px;font-size:15px}
+.logline{margin:12px 0 0;font-size:15px;color:var(--muted)}
+.stamp{position:absolute;right:20px;top:150px;transform:rotate(-12deg);border:3px solid var(--lagoon);color:var(--lagoon);
+  font-family:var(--display);font-weight:800;font-size:26px;padding:2px 10px;border-radius:6px;opacity:0;pointer-events:none}
+.bib.done .stamp{opacity:.85}
+.bib.done.justdone .stamp{animation:stamp .35s ease-out}
+@keyframes stamp{0%{transform:rotate(-12deg) scale(1.8);opacity:0}100%{transform:rotate(-12deg) scale(1);opacity:.85}}
+@media (prefers-reduced-motion: reduce){.bib.done.justdone .stamp{animation:none}}
+.back[hidden]{display:none}
+.back{display:block;margin:12px auto 0;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:15px}
+.phase-note{font-size:15px;color:var(--muted);margin:14px 2px 0}
+
+/* Sections */
+section[hidden]{display:none}
+h3.t{font-family:var(--display);font-weight:800;font-size:30px;margin:20px 0 6px;line-height:1}
+h4{font-size:17px;margin:20px 0 6px}
+p.lead{margin:0 0 14px;color:var(--muted)}
+
+/* Plan list */
+.phase{margin:22px 0 4px}
+.phase h4{margin:0;font-family:var(--display);font-weight:800;font-size:22px}
+.phase p{margin:2px 0 0;color:var(--muted);font-size:15px}
+details.week{border-top:1px solid var(--line)}
+details.week:last-of-type{border-bottom:1px solid var(--line)}
+details.week summary{list-style:none;cursor:pointer;padding:12px 2px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:end}
+details.week summary .wt,details.week summary .wd,details.week summary .wk span{display:block}
+details.week summary::-webkit-details-marker{display:none}
+details.week summary .wt{font-weight:700}
+details.week summary .wd{color:var(--muted);font-size:14px}
+details.week summary .wk{font-size:15px;text-align:right}
+.prog{grid-column:1/-1;height:5px;background:var(--soft);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--lagoon)}
+.cur summary .wt::after{content:' (this week)';color:var(--lagoon);font-weight:400}
+.day{display:grid;grid-template-columns:28px 52px 1fr auto;gap:8px;align-items:center;padding:8px 2px;border-top:1px dashed var(--line)}
+.day .dot{width:12px;height:12px;border-radius:50%;background:var(--k);justify-self:center}
+.day.k-REST .dot{background:transparent;box-shadow:inset 0 0 0 2px var(--stone)}
+.day .dd{font-size:14px;color:var(--muted);line-height:1.15}
+.day button.open{appearance:none;border:0;background:none;text-align:left;padding:0;cursor:pointer}
+.day .tt{font-weight:700;font-size:15px}
+.day .km{font-size:14px;color:var(--muted)}
+.check{width:28px;height:28px;border-radius:8px;border:2px solid var(--line);background:var(--card);cursor:pointer;display:grid;place-items:center;padding:0}
+.check[aria-pressed="true"]{background:var(--lagoon);border-color:var(--lagoon);color:#fff}
+.check svg{width:16px;height:16px}
+
+/* Paces */
+.field{display:grid;gap:4px;margin:0 0 12px}
+.field label{font-size:15px;font-weight:700}
+.field .hint{font-size:14px;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=text],input[type=number],select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);min-height:48px}
+textarea{min-height:80px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:14px;color:var(--muted);font-weight:700}
+tr.on td{background:var(--soft);font-weight:700}
+.result{background:var(--card);border-radius:10px;padding:14px 16px;margin:6px 0 14px;box-shadow:0 0 0 1.5px var(--line) inset}
+.result .big{font-family:var(--display);font-weight:800;font-size:40px;line-height:1}
+
+/* Progress */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:8px 0 16px}
+.stat{padding:12px 0;border-top:2px solid var(--ink)}
+.stat .v{font-size:26px;font-weight:700;line-height:1.1}
+.stat .l{font-size:14px;color:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.legend{display:flex;gap:16px;font-size:14px;color:var(--muted);margin:4px 0 0}
+.legend span::before{content:'';display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--lagoon)}
+.legend span.p::before{background:transparent;box-shadow:inset 0 0 0 2px var(--stone)}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0}
+
+/* Guide */
+.guide details{border-top:1px solid var(--line);padding:2px 0}
+.guide details:last-child{border-bottom:1px solid var(--line)}
+.guide summary{cursor:pointer;padding:12px 2px;font-weight:700}
+.guide ul{margin:0 0 12px;padding-left:20px}
+.guide li{margin:4px 0}
+.guide table{margin:0 0 12px}
+a{color:var(--ink)}
+
+/* Nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav.tabs .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{appearance:none;border:0;background:none;padding:10px 0 12px;font-size:13px;color:var(--muted);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;min-height:60px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--ink);font-weight:700}
+nav.tabs button[aria-current="page"] svg{stroke:var(--coral)}
+
+/* Dialog */
+dialog{border:0;border-radius:14px;padding:0;width:min(520px,calc(100% - 24px));background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(10,16,32,.55)}
+dialog form{padding:18px 18px 16px}
+dialog h3{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:28px}
+dialog .sub{margin:0 0 14px;color:var(--muted);font-size:15px}
+.feel{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.feel label{display:grid;place-items:center;padding:8px 0;border-radius:8px;background:var(--soft);font-size:13px;cursor:pointer;text-align:center}
+.feel input{position:absolute;opacity:0;pointer-events:none}
+.feel input:checked + span{font-weight:700}
+.feel label:has(input:checked){background:var(--ink);color:var(--card)}
+.toggle{display:flex;align-items:center;gap:10px;font-weight:700;margin:0 0 12px}
+.toggle input{width:22px;height:22px}
+.dlg-actions{display:flex;gap:10px;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--card);
+  padding:10px 16px;border-radius:10px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:10}
+.toast.show{opacity:1}
+.foot{color:var(--muted);font-size:14px;margin:26px 0 8px}
+@media (min-width:760px){ body{font-size:18px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Feb 6 Half</h1>
+    <div class="count num" id="countdown"></div>
+  </header>
+
+  <main>
+  <section id="tab-today" aria-label="Today">
+    <div class="strip" id="strip" role="group" aria-label="This week"></div>
+    <article class="bib" id="bib" aria-live="polite"></article>
+    <button class="back" id="backToday" hidden>Back to today</button>
+    <p class="phase-note" id="phaseNote"></p>
+  </section>
+
+  <section id="tab-plan" hidden aria-label="Plan">
+    <h3 class="t">15 weeks</h3>
+    <p class="lead">Tap a week to see its days. Tap a day to open it, or tick it off.</p>
+    <div id="planList"></div>
+  </section>
+
+  <section id="tab-paces" hidden aria-label="Paces">
+    <h3 class="t">Paces</h3>
+    <p class="lead">Train at the VDOT your latest test shows, not your goal. Enter each test time when you run it.</p>
+    <div class="row2">
+      <div class="field"><label for="t5">5K test, Nov 21</label><input id="t5" type="text" inputmode="numeric" placeholder="mm:ss" autocomplete="off"><span class="hint">Sets Build-phase paces</span></div>
+      <div class="field"><label for="t10">10K test, Dec 19</label><input id="t10" type="text" inputmode="numeric" placeholder="mm:ss" autocomplete="off"><span class="hint">Sets race-phase paces</span></div>
+    </div>
+    <div class="result" id="vdotResult"></div>
+    <div class="row2">
+      <div class="field"><label for="vdotView">Show paces for VDOT</label><select id="vdotView"></select></div>
+      <div class="field"><label for="hrmax">Max heart rate</label><input id="hrmax" type="number" inputmode="numeric" min="150" max="230"></div>
+    </div>
+    <table class="num" id="paceTable"></table>
+    <h4>Heart rate guide</h4>
+    <table class="num" id="hrTable"></table>
+    <p class="foot">Paces and race times from Daniels' Running Formula, tables 5.1 and 5.2. Move up a row only after a test, and not more often than every third week.</p>
+  </section>
+
+  <section id="tab-progress" hidden aria-label="Progress">
+    <h3 class="t">Progress</h3>
+    <div class="stats" id="stats"></div>
+    <svg class="chart" id="chart" viewBox="0 0 480 220" role="img" aria-label="Planned and logged kilometres per week"></svg>
+    <div class="legend"><span>Logged km</span><span class="p">Planned km</span></div>
+    <h4>Your data</h4>
+    <p class="lead">Ticks and logs are saved in this browser only. Back them up, or move them to another phone, with these buttons.</p>
+    <div class="tools">
+      <button class="btn ghost small" id="exportJson">Back up data</button>
+      <button class="btn ghost small" id="importJson">Restore backup</button>
+      <button class="btn ghost small" id="exportCsv">Export log for spreadsheet</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+    </div>
+  </section>
+
+  <section id="tab-guide" hidden aria-label="Guide" class="guide">
+    <h3 class="t">Guide</h3>
+    <p class="lead">How to run each type of session, the gym work, and what to do when life gets in the way.</p>
+    <div id="guideBody"></div>
+  </section>
+  </main>
+</div>
+
+<nav class="tabs" aria-label="Sections"><div class="in" id="tabs"></div></nav>
+
+<dialog id="logDlg" aria-labelledby="logTitle">
+  <form method="dialog" id="logForm">
+    <h3 id="logTitle">Log run</h3>
+    <p class="sub" id="logSub"></p>
+    <label class="toggle"><input type="checkbox" id="fDone"> Done</label>
+    <div class="row2">
+      <div class="field"><label for="fKm">Distance (km)</label><input id="fKm" type="number" step="0.01" min="0" inputmode="decimal"></div>
+      <div class="field"><label for="fTime">Time</label><input id="fTime" type="text" placeholder="h:mm:ss or mm:ss" inputmode="numeric"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="fHr">Average heart rate</label><input id="fHr" type="number" min="60" max="230" inputmode="numeric"></div>
+      <div class="field"><label>Pace</label><input id="fPace" type="text" readonly tabindex="-1" aria-label="Pace, calculated"></div>
+    </div>
+    <div class="field"><span style="font-weight:700;font-size:15px">How did it feel?</span>
+      <div class="feel" role="radiogroup" aria-label="How did it feel">
+        <label><input type="radio" name="feel" value="1"><span>Very easy</span></label>
+        <label><input type="radio" name="feel" value="2"><span>Easy</span></label>
+        <label><input type="radio" name="feel" value="3"><span>Steady</span></label>
+        <label><input type="radio" name="feel" value="4"><span>Hard</span></label>
+        <label><input type="radio" name="feel" value="5"><span>Very hard</span></label>
+      </div>
+    </div>
+    <div class="field"><label for="fNotes">Notes</label><textarea id="fNotes" placeholder="Weather, how the legs felt, fuel you tried"></textarea></div>
+    <div class="dlg-actions">
+      <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+      <button class="btn primary" id="saveLog" value="save">Save</button>
+    </div>
+  </form>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script id="plan-data" type="application/json">{"title":"Half Marathon Plan","race":{"date":"2027-02-06","name":"Half marathon","distance":21.0975},"start":"2026-10-26","hrMax":194,"recentAvgKm":22.5,"phases":[{"id":"base","name":"Base","weeks":[1,4],"goal":"Go from 3 to 5 runs a week; long run stays 12-13 km; start hill sprints and gym.","vdotFrom":"Start: VDOT 32"},{"id":"build","name":"Build","weeks":[5,9],"goal":"Daniels' 2-week cycle: R or I on Thursday, M finish on every second long run.","vdotFrom":"VDOT from your Nov 21 5K"},{"id":"specific","name":"Race-specific","weeks":[10,13],"goal":"Half-marathon-pace work; long run peaks at 16 km on Jan 16.","vdotFrom":"VDOT from your Dec 19 10K"},{"id":"taper","name":"Taper & race","weeks":[14,15],"goal":"Distance down 20%, then 60%; short bits of T and HM pace keep you sharp.","vdotFrom":"VDOT from your Dec 19 10K"}],"weeks":[{"week":1,"phase":"base","start":"2026-10-26","end":"2026-11-01","km":31.2,"race":false},{"week":2,"phase":"base","start":"2026-11-02","end":"2026-11-08","km":32.2,"race":false},{"week":3,"phase":"base","start":"2026-11-09","end":"2026-11-15","km":34.0,"race":false},{"week":4,"phase":"base","start":"2026-11-16","end":"2026-11-22","km":27.6,"race":false},{"week":5,"phase":"build","start":"2026-11-23","end":"2026-11-29","km":36.5,"race":false},{"week":6,"phase":"build","start":"2026-11-30","end":"2026-12-06","km":37.2,"race":false},{"week":7,"phase":"build","start":"2026-12-07","end":"2026-12-13","km":38.5,"race":false},{"week":8,"phase":"build","start":"2026-12-14","end":"2026-12-20","km":33.1,"race":false},{"week":9,"phase":"build","start":"2026-12-21","end":"2026-12-27","km":35.8,"race":false},{"week":10,"phase":"specific","start":"2026-12-28","end":"2027-01-03","km":40.1,"race":false},{"week":11,"phase":"specific","start":"2027-01-04","end":"2027-01-10","km":39.8,"race":false},{"week":12,"phase":"specific","start":"2027-01-11","end":"2027-01-17","km":41.1,"race":false},{"week":13,"phase":"specific","start":"2027-01-18","end":"2027-01-24","km":33.8,"race":false},{"week":14,"phase":"taper","start":"2027-01-25","end":"2027-01-31","km":33.0,"race":false},{"week":15,"phase":"taper","start":"2027-02-01","end":"2027-02-06","km":16.4,"race":true}],"sessions":[{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w1-mon","date":"2026-10-26","week":1,"phase":"base"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 1 km at T, 1 min jog · 1.5 km easy","km":6.7,"pace":"T","gym":null,"extra":null,"id":"w1-tue","date":"2026-10-27","week":1,"phase":"base"},{"day":"Wed","type":"E","title":"Easy + strides","detail":"Easy 35 min + 6 strides","km":4.6,"pace":"E","gym":"B","extra":"strides","id":"w1-wed","date":"2026-10-28","week":1,"phase":"base"},{"day":"Thu","type":"E","title":"Easy + hill sprints","detail":"Easy 35 min + 2 hill sprints (8 s)","km":4.3,"pace":"E","gym":null,"extra":"hills","id":"w1-thu","date":"2026-10-29","week":1,"phase":"base"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w1-fri","date":"2026-10-30","week":1,"phase":"base"},{"day":"Sat","type":"L","title":"Long run","detail":"Long 12 km easy, early morning","km":12,"pace":"L","gym":null,"extra":null,"id":"w1-sat","date":"2026-10-31","week":1,"phase":"base"},{"day":"Sun","type":"REC","title":"Recovery","detail":"Recovery 30 min","km":3.6,"pace":"REC","gym":"A","extra":null,"id":"w1-sun","date":"2026-11-01","week":1,"phase":"base"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w2-mon","date":"2026-11-02","week":2,"phase":"base"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 2 × 1.6 km at T, 2 min jog · 1.5 km easy","km":7.0,"pace":"T","gym":null,"extra":null,"id":"w2-tue","date":"2026-11-03","week":2,"phase":"base"},{"day":"Wed","type":"E","title":"Easy + strides","detail":"Easy 40 min + 6 strides","km":5.2,"pace":"E","gym":"B","extra":"strides","id":"w2-wed","date":"2026-11-04","week":2,"phase":"base"},{"day":"Thu","type":"E","title":"Easy + hill sprints","detail":"Easy 35 min + 4 hill sprints (8 s)","km":4.4,"pace":"E","gym":null,"extra":"hills","id":"w2-thu","date":"2026-11-05","week":2,"phase":"base"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w2-fri","date":"2026-11-06","week":2,"phase":"base"},{"day":"Sat","type":"L","title":"Long run","detail":"Long 12 km easy","km":12,"pace":"L","gym":null,"extra":null,"id":"w2-sat","date":"2026-11-07","week":2,"phase":"base"},{"day":"Sun","type":"REC","title":"Recovery","detail":"Recovery 30 min","km":3.6,"pace":"REC","gym":"A","extra":null,"id":"w2-sun","date":"2026-11-08","week":2,"phase":"base"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w3-mon","date":"2026-11-09","week":3,"phase":"base"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 4 × 5 min at T, 1 min jog · 1.5 km easy","km":7.1,"pace":"T","gym":null,"extra":null,"id":"w3-tue","date":"2026-11-10","week":3,"phase":"base"},{"day":"Wed","type":"E","title":"Easy + strides","detail":"Easy 40 min + 8 strides","km":5.3,"pace":"E","gym":"B","extra":"strides","id":"w3-wed","date":"2026-11-11","week":3,"phase":"base"},{"day":"Thu","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 6 hill sprints (8 s)","km":5.0,"pace":"E","gym":null,"extra":"hills","id":"w3-thu","date":"2026-11-12","week":3,"phase":"base"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w3-fri","date":"2026-11-13","week":3,"phase":"base"},{"day":"Sat","type":"L","title":"Long run","detail":"Long 13 km easy","km":13,"pace":"L","gym":null,"extra":null,"id":"w3-sat","date":"2026-11-14","week":3,"phase":"base"},{"day":"Sun","type":"REC","title":"Recovery","detail":"Recovery 30 min","km":3.6,"pace":"REC","gym":"A","extra":null,"id":"w3-sun","date":"2026-11-15","week":3,"phase":"base"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w4-mon","date":"2026-11-16","week":4,"phase":"base"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 1 km at T, 1 min jog · 1.5 km easy","km":6.7,"pace":"T","gym":null,"extra":null,"id":"w4-tue","date":"2026-11-17","week":4,"phase":"base"},{"day":"Wed","type":"E","title":"Easy + strides","detail":"Easy 35 min + 6 strides (skip Gym B this week)","km":4.6,"pace":"E","gym":null,"extra":"strides","id":"w4-wed","date":"2026-11-18","week":4,"phase":"base"},{"day":"Thu","type":"E","title":"Easy + strides","detail":"Easy 30 min + 4 strides","km":3.9,"pace":"E","gym":null,"extra":"strides","id":"w4-thu","date":"2026-11-19","week":4,"phase":"base"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w4-fri","date":"2026-11-20","week":4,"phase":"base"},{"day":"Sat","type":"TEST","title":"5K time trial","detail":"2 km easy + 4 strides · 5 km hard at an even effort · 1.5 km easy. Enter your time in Paces to set your VDOT for the Build phase.","km":8.8,"pace":null,"gym":null,"extra":"test5k","id":"w4-sat","date":"2026-11-21","week":4,"phase":"base"},{"day":"Sun","type":"REC","title":"Recovery","detail":"Recovery 30 min","km":3.6,"pace":"REC","gym":"A","extra":null,"id":"w4-sun","date":"2026-11-22","week":4,"phase":"base"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w5-mon","date":"2026-11-23","week":5,"phase":"build"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 7 min at T, 1 min jog · 1.5 km easy","km":7.2,"pace":"T","gym":null,"extra":null,"id":"w5-tue","date":"2026-11-24","week":5,"phase":"build"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 8 hill sprints (8 s)","km":5.0,"pace":"E","gym":"B","extra":"hills","id":"w5-wed","date":"2026-11-25","week":5,"phase":"build"},{"day":"Thu","type":"R","title":"R session","detail":"2 km easy · 8 × 200 m at R, 200 m jog · 1.5 km easy","km":6.7,"pace":"R","gym":null,"extra":null,"id":"w5-thu","date":"2026-11-26","week":5,"phase":"build"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w5-fri","date":"2026-11-27","week":5,"phase":"build"},{"day":"Sat","type":"L","title":"Long run","detail":"Long 13 km easy","km":13,"pace":"L","gym":null,"extra":null,"id":"w5-sat","date":"2026-11-28","week":5,"phase":"build"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 35 min + 6 strides","km":4.6,"pace":"REC","gym":"A","extra":"strides","id":"w5-sun","date":"2026-11-29","week":5,"phase":"build"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w6-mon","date":"2026-11-30","week":6,"phase":"build"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 2 × 10 min at T, 2 min jog · 1.5 km easy","km":7.0,"pace":"T","gym":null,"extra":null,"id":"w6-tue","date":"2026-12-01","week":6,"phase":"build"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 8 hill sprints (10 s)","km":5.1,"pace":"E","gym":"B","extra":"hills","id":"w6-wed","date":"2026-12-02","week":6,"phase":"build"},{"day":"Thu","type":"I","title":"I session","detail":"2 km easy · 4 × 4 min at I, 3 min jog · 1.5 km easy","km":7.5,"pace":"I","gym":null,"extra":null,"id":"w6-thu","date":"2026-12-03","week":6,"phase":"build"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w6-fri","date":"2026-12-04","week":6,"phase":"build"},{"day":"Sat","type":"LM","title":"Long run, M finish","detail":"Long 13 km: 8 km easy, then 5 km at M","km":13,"pace":"M","gym":null,"extra":null,"id":"w6-sat","date":"2026-12-05","week":6,"phase":"build"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 35 min + 6 strides","km":4.6,"pace":"REC","gym":"A","extra":"strides","id":"w6-sun","date":"2026-12-06","week":6,"phase":"build"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w7-mon","date":"2026-12-07","week":7,"phase":"build"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 8 min at T, 1 min jog · 1.5 km easy","km":7.7,"pace":"T","gym":null,"extra":null,"id":"w7-tue","date":"2026-12-08","week":7,"phase":"build"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 8 hill sprints (10 s)","km":5.1,"pace":"E","gym":"B","extra":"hills","id":"w7-wed","date":"2026-12-09","week":7,"phase":"build"},{"day":"Thu","type":"R","title":"R session","detail":"2 km easy · 6 × 300 m at R, 300 m jog · 1.5 km easy","km":7.1,"pace":"R","gym":null,"extra":null,"id":"w7-thu","date":"2026-12-10","week":7,"phase":"build"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w7-fri","date":"2026-12-11","week":7,"phase":"build"},{"day":"Sat","type":"L","title":"Long run","detail":"Long 14 km easy","km":14,"pace":"L","gym":null,"extra":null,"id":"w7-sat","date":"2026-12-12","week":7,"phase":"build"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 35 min + 6 strides","km":4.6,"pace":"REC","gym":"A","extra":"strides","id":"w7-sun","date":"2026-12-13","week":7,"phase":"build"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w8-mon","date":"2026-12-14","week":8,"phase":"build"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 1 km at T, 1 min jog · 1.5 km easy","km":6.7,"pace":"T","gym":null,"extra":null,"id":"w8-tue","date":"2026-12-15","week":8,"phase":"build"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 4 hill sprints (10 s) (skip Gym B this week)","km":5.0,"pace":"E","gym":null,"extra":"hills","id":"w8-wed","date":"2026-12-16","week":8,"phase":"build"},{"day":"Thu","type":"E","title":"Easy + strides","detail":"Easy 30 min + 6 strides","km":4.0,"pace":"E","gym":null,"extra":"strides","id":"w8-thu","date":"2026-12-17","week":8,"phase":"build"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w8-fri","date":"2026-12-18","week":8,"phase":"build"},{"day":"Sat","type":"TEST","title":"10K time trial or race","detail":"2 km easy + 4 strides · 10 km · 1.5 km easy. Enter your time in Paces: it sets your VDOT and goal pace for the last phase.","km":13.8,"pace":null,"gym":null,"extra":"test10k","id":"w8-sat","date":"2026-12-19","week":8,"phase":"build"},{"day":"Sun","type":"REC","title":"Recovery","detail":"Recovery 30 min (skip Gym A this week)","km":3.6,"pace":"REC","gym":null,"extra":null,"id":"w8-sun","date":"2026-12-20","week":8,"phase":"build"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w9-mon","date":"2026-12-21","week":9,"phase":"build"},{"day":"Tue","type":"E","title":"Easy + strides","detail":"Easy 40 min + 6 strides (still recovering from the 10K)","km":5.2,"pace":"E","gym":null,"extra":"strides","id":"w9-tue","date":"2026-12-22","week":9,"phase":"build"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 6 hill sprints (10 s)","km":5.0,"pace":"E","gym":"B","extra":"hills","id":"w9-wed","date":"2026-12-23","week":9,"phase":"build"},{"day":"Thu","type":"T","title":"Threshold","detail":"2 km easy · 2 × 10 min at T, 2 min jog · 1.5 km easy","km":7.0,"pace":"T","gym":null,"extra":null,"id":"w9-thu","date":"2026-12-24","week":9,"phase":"build"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w9-fri","date":"2026-12-25","week":9,"phase":"build"},{"day":"Sat","type":"LM","title":"Long run, M finish","detail":"Long 14 km: 9 km easy, then 5 km at M","km":14,"pace":"M","gym":null,"extra":null,"id":"w9-sat","date":"2026-12-26","week":9,"phase":"build"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 35 min + 6 strides","km":4.6,"pace":"REC","gym":"A","extra":"strides","id":"w9-sun","date":"2026-12-27","week":9,"phase":"build"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w10-mon","date":"2026-12-28","week":10,"phase":"specific"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 8 min at T, 1 min jog · 1.5 km easy","km":7.7,"pace":"T","gym":null,"extra":null,"id":"w10-tue","date":"2026-12-29","week":10,"phase":"specific"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 6 hill sprints (10 s)","km":5.0,"pace":"E","gym":"B-light","extra":"hills","id":"w10-wed","date":"2026-12-30","week":10,"phase":"specific"},{"day":"Thu","type":"HM","title":"HM pace","detail":"2 km easy · 2 × 2.5 km at HM pace, 2 min jog · 1.5 km easy","km":8.8,"pace":"HM","gym":null,"extra":null,"id":"w10-thu","date":"2026-12-31","week":10,"phase":"specific"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w10-fri","date":"2027-01-01","week":10,"phase":"specific"},{"day":"Sat","type":"L","title":"Long run","detail":"Long 14 km easy. Practise drinking and fuelling on the run.","km":14,"pace":"L","gym":null,"extra":null,"id":"w10-sat","date":"2027-01-02","week":10,"phase":"specific"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 35 min + 6 strides","km":4.6,"pace":"REC","gym":"A","extra":"strides","id":"w10-sun","date":"2027-01-03","week":10,"phase":"specific"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w11-mon","date":"2027-01-04","week":11,"phase":"specific"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 2 × 12 min at T, 2 min jog · 1.5 km easy","km":7.7,"pace":"T","gym":null,"extra":null,"id":"w11-tue","date":"2027-01-05","week":11,"phase":"specific"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 6 hill sprints (10 s)","km":5.0,"pace":"E","gym":"B-light","extra":"hills","id":"w11-wed","date":"2027-01-06","week":11,"phase":"specific"},{"day":"Thu","type":"I","title":"I session","detail":"2 km easy · 4 × 4 min at I, 3 min jog · 1.5 km easy","km":7.5,"pace":"I","gym":null,"extra":null,"id":"w11-thu","date":"2027-01-07","week":11,"phase":"specific"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w11-fri","date":"2027-01-08","week":11,"phase":"specific"},{"day":"Sat","type":"LHM","title":"Long run, HM finish","detail":"Long 15 km: 11 km easy, then the last 4 km at HM pace","km":15,"pace":"HM","gym":null,"extra":null,"id":"w11-sat","date":"2027-01-09","week":11,"phase":"specific"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 35 min + 6 strides","km":4.6,"pace":"REC","gym":"A","extra":"strides","id":"w11-sun","date":"2027-01-10","week":11,"phase":"specific"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w12-mon","date":"2027-01-11","week":12,"phase":"specific"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 8 min at T, 1 min jog · 1.5 km easy","km":7.7,"pace":"T","gym":null,"extra":null,"id":"w12-tue","date":"2027-01-12","week":12,"phase":"specific"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 35 min + 6 hill sprints (10 s)","km":4.5,"pace":"E","gym":"B-light","extra":"hills","id":"w12-wed","date":"2027-01-13","week":12,"phase":"specific"},{"day":"Thu","type":"HM","title":"HM pace","detail":"1.5 km easy · 2 × 3 km at HM pace, 3 min jog · 1 km easy","km":8.9,"pace":"HM","gym":null,"extra":null,"id":"w12-thu","date":"2027-01-14","week":12,"phase":"specific"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w12-fri","date":"2027-01-15","week":12,"phase":"specific"},{"day":"Sat","type":"L","title":"Peak long run","detail":"16 km easy (about 2:15, close to race duration), with race fuel","km":16,"pace":"L","gym":null,"extra":null,"id":"w12-sat","date":"2027-01-16","week":12,"phase":"specific"},{"day":"Sun","type":"REC","title":"Recovery + strides","detail":"Recovery 30 min + 6 strides","km":4.0,"pace":"REC","gym":"A","extra":"strides","id":"w12-sun","date":"2027-01-17","week":12,"phase":"specific"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w13-mon","date":"2027-01-18","week":13,"phase":"specific"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 2 × 10 min at T, 2 min jog · 1.5 km easy","km":7.0,"pace":"T","gym":null,"extra":null,"id":"w13-tue","date":"2027-01-19","week":13,"phase":"specific"},{"day":"Wed","type":"E","title":"Easy + hill sprints","detail":"Easy 40 min + 6 hill sprints (10 s), the last ones","km":5.0,"pace":"E","gym":"B-light","extra":"hills","id":"w13-wed","date":"2027-01-20","week":13,"phase":"specific"},{"day":"Thu","type":"E","title":"Easy + strides","detail":"Easy 35 min + 6 strides","km":4.6,"pace":"E","gym":null,"extra":"strides","id":"w13-thu","date":"2027-01-21","week":13,"phase":"specific"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w13-fri","date":"2027-01-22","week":13,"phase":"specific"},{"day":"Sat","type":"REH","title":"Race rehearsal","detail":"3 km easy · 8 km at goal HM pace · 2 km easy. Use race start time, breakfast, shoes and fuel. If it felt close to a race effort, set race pace 5 s/km slower.","km":13,"pace":"HM","gym":null,"extra":null,"id":"w13-sat","date":"2027-01-23","week":13,"phase":"specific"},{"day":"Sun","type":"REC","title":"Recovery","detail":"Recovery 35 min (last heavy gym session, 2 sets)","km":4.2,"pace":"REC","gym":"A","extra":null,"id":"w13-sun","date":"2027-01-24","week":13,"phase":"specific"},{"day":"Mon","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w14-mon","date":"2027-01-25","week":14,"phase":"taper"},{"day":"Tue","type":"T","title":"Threshold","detail":"2 km easy · 3 × 1 km at T, 1 min jog · 1.5 km easy","km":6.7,"pace":"T","gym":null,"extra":null,"id":"w14-tue","date":"2027-01-26","week":14,"phase":"taper"},{"day":"Wed","type":"E","title":"Easy + strides","detail":"Easy 35 min + 6 strides","km":4.6,"pace":"E","gym":"core","extra":"strides","id":"w14-wed","date":"2027-01-27","week":14,"phase":"taper"},{"day":"Thu","type":"HM","title":"HM pace","detail":"2 km easy · 2 × 2 km at HM pace, 2 min jog · 1.5 km easy","km":7.8,"pace":"HM","gym":null,"extra":null,"id":"w14-thu","date":"2027-01-28","week":14,"phase":"taper"},{"day":"Fri","type":"REST","title":"Rest","detail":"Rest day. Optional 10 min core at home on Mon or Fri.","km":0,"pace":null,"gym":null,"extra":null,"id":"w14-fri","date":"2027-01-29","week":14,"phase":"taper"},{"day":"Sat","type":"E","title":"Easy + strides","detail":"Easy 30 min + 4 strides","km":3.9,"pace":"E","gym":null,"extra":"strides","id":"w14-sat","date":"2027-01-30","week":14,"phase":"taper"},{"day":"Sun","type":"L","title":"Long run (2/3)","detail":"Long 10 km easy, two-thirds of your usual long run (Daniels: 6 days before the race)","km":10,"pace":"L","gym":null,"extra":null,"id":"w14-sun","date":"2027-01-31","week":14,"phase":"taper"},{"day":"Mon","type":"E","title":"Easy (optional)","detail":"Easy 25 min, or rest","km":3.0,"pace":"E","gym":null,"extra":null,"id":"w15-mon","date":"2027-02-01","week":15,"phase":"taper"},{"day":"Tue","type":"E","title":"Easy + strides","detail":"Easy 30 min + 4 strides","km":3.9,"pace":"E","gym":null,"extra":"strides","id":"w15-tue","date":"2027-02-02","week":15,"phase":"taper"},{"day":"Wed","type":"T","title":"Threshold (short)","detail":"2 km easy · 3 × 1 km at T, 2 min rest · 1.5 km easy (Daniels: 3 days before the race)","km":6.5,"pace":"T","gym":null,"extra":null,"id":"w15-wed","date":"2027-02-03","week":15,"phase":"taper"},{"day":"Thu","type":"E","title":"Easy","detail":"Easy 25 min","km":3.0,"pace":"E","gym":null,"extra":null,"id":"w15-thu","date":"2027-02-04","week":15,"phase":"taper"},{"day":"Fri","type":"E","title":"Rest or shakeout","detail":"Rest, or 20 min easy + 4 strides","km":0,"pace":"E","gym":null,"extra":null,"id":"w15-fri","date":"2027-02-05","week":15,"phase":"taper"},{"day":"Sat","type":"RACE","title":"RACE: half marathon","detail":"Warm up 10 min easy + 4 strides. Run the first 3 km a little slower than goal pace, then settle in.","km":21.1,"pace":"HM","gym":null,"extra":null,"id":"w15-sat","date":"2027-02-06","week":15,"phase":"taper"}],"docUrl":"https://claude.ai/artifact/BErnvi4zztgJg9Htm676nq"}</script>
+<script>
+(() => {
+'use strict';
+const PLAN = JSON.parse(document.getElementById('plan-data').textContent);
+const SESS = PLAN.sessions;
+const BYID = Object.fromEntries(SESS.map(s => [s.id, s]));
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Daniels' Running Formula, tables 5.1 and 5.2 (VDOT 30-40)
+const V = {
+ 30:{e:'7:27–8:14',m:'7:03',t:'6:24',i:'5:55',i4:'2:22',r2:67,r3:101,k5:'30:40',k10:'63:46',hm:'2:21:04'},
+ 31:{e:'7:16–8:02',m:'6:52',t:'6:14',i:'5:45',i4:'2:18',r2:65,r3:98,k5:'29:51',k10:'62:03',hm:'2:17:21'},
+ 32:{e:'7:05–7:52',m:'6:40',t:'6:05',i:'5:35',i4:'2:14',r2:63,r3:95,k5:'29:05',k10:'60:26',hm:'2:13:49'},
+ 33:{e:'6:55–7:41',m:'6:30',t:'5:56',i:'5:28',i4:'2:11',r2:61,r3:92,k5:'28:21',k10:'58:54',hm:'2:10:27'},
+ 34:{e:'6:45–7:31',m:'6:20',t:'5:48',i:'5:20',i4:'2:08',r2:60,r3:90,k5:'27:39',k10:'57:26',hm:'2:07:16'},
+ 35:{e:'6:36–7:21',m:'6:10',t:'5:40',i:'5:13',i4:'2:05',r2:58,r3:87,k5:'27:00',k10:'56:03',hm:'2:04:13'},
+ 36:{e:'6:27–7:11',m:'6:01',t:'5:33',i:'5:05',i4:'2:02',r2:57,r3:85,k5:'26:22',k10:'54:44',hm:'2:01:19'},
+ 37:{e:'6:19–7:02',m:'5:53',t:'5:26',i:'5:00',i4:'1:59',r2:55,r3:83,k5:'25:46',k10:'53:29',hm:'1:58:34'},
+ 38:{e:'6:11–6:54',m:'5:45',t:'5:19',i:'4:54',i4:'1:56',r2:54,r3:81,k5:'25:12',k10:'52:17',hm:'1:55:55'},
+ 39:{e:'6:03–6:46',m:'5:37',t:'5:12',i:'4:48',i4:'1:54',r2:53,r3:80,k5:'24:39',k10:'51:09',hm:'1:53:24'},
+ 40:{e:'5:56–6:38',m:'5:29',t:'5:06',i:'4:42',i4:'1:52',r2:52,r3:78,k5:'24:08',k10:'50:03',hm:'1:50:59'},
+};
+const VS = Object.keys(V).map(Number);
+
+// ---------- time helpers ----------
+const toSec = s => { if (s == null) return null; s = String(s).trim(); if (!s) return null;
+  const p = s.split(':').map(Number); if (p.some(isNaN)) return null;
+  return p.length === 3 ? p[0]*3600+p[1]*60+p[2] : p.length === 2 ? p[0]*60+p[1] : p[0]*60; };
+const fmt = (sec, h) => { sec = Math.round(sec); const hh = Math.floor(sec/3600), mm = Math.floor(sec%3600/60), ss = sec%60;
+  return (hh || h) ? `${hh}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}` : `${mm}:${String(ss).padStart(2,'0')}`; };
+const hmPace = v => fmt(toSec(V[v].hm) / 21.0975);
+const parseD = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const nice = s => { const d = parseD(s); return `${DAYS[(d.getDay()+6)%7]} ${MON[d.getMonth()]} ${d.getDate()}`; };
+const short = s => { const d = parseD(s); return `${MON[d.getMonth()]} ${d.getDate()}`; };
+
+// ---------- storage ----------
+const KEY = 'hm2027-v1';
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } };
+let DB = Object.assign({log:{}, tests:{}, hrMax: PLAN.hrMax}, load());
+DB.log = DB.log || {}; DB.tests = DB.tests || {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) { toast('Could not save in this browser'); } };
+
+// ---------- VDOT logic ----------
+const vdotFrom = (sec, key) => { if (!sec) return null; let best = null;
+  for (const v of VS) { if (toSec(V[v][key]) >= sec) best = v; }
+  return best == null ? (sec < toSec(V[40][key]) ? 40 : null) : best; };
+const v5 = () => vdotFrom(toSec(DB.tests.t5k), 'k5');
+const v10 = () => vdotFrom(toSec(DB.tests.t10k), 'k10');
+const phaseV = ph => { const base = 32;
+  if (ph === 'base') return base;
+  if (ph === 'build') return v5() || base;
+  return v10() || v5() || base; };
+
+// ---------- dates ----------
+const todayIso = () => iso(new Date());
+const firstDay = SESS[0].date, raceDay = PLAN.race.date;
+const clampDay = s => s < firstDay ? firstDay : s > raceDay ? raceDay : s;
+let selected = clampDay(todayIso());
+
+// ---------- session rendering ----------
+const hrMax = () => Number(DB.hrMax) || PLAN.hrMax;
+const pct = p => Math.round(hrMax() * p);
+function paceInfo(s) {
+  const v = phaseV(s.phase), P = V[v];
+  switch (s.type) {
+    case 'T': return {lab:'T pace', big:P.t, unit:'/km', v};
+    case 'I': return {lab:'I pace', big:P.i, unit:`/km, ${P.i4} per 400 m`, v};
+    case 'R': return /300 m/.test(s.detail) ? {lab:'R pace', big:`${P.r3}`, unit:'s per 300 m', v} : {lab:'R pace', big:`${P.r2}`, unit:'s per 200 m', v};
+    case 'LM': return {lab:'M pace', big:P.m, unit:'/km for the M part', v};
+    case 'HM': case 'LHM': case 'REH': return {lab:'HM pace', big:hmPace(v), unit:'/km', v};
+    case 'RACE': return (v5() || v10()) ? {lab:'Goal', big:V[v].hm, unit:`${hmPace(v)}/km`, v} : {lab:'Target', big:V[34].hm, unit:`${hmPace(34)}/km until your tests set it`, v:34};
+    case 'TEST': return /10 km/.test(s.detail) ? {lab:'VDOT 32–36 runs', big:`${V[36].k10}–${V[32].k10}`, unit:'', v} : {lab:'VDOT 32–36 runs', big:`${V[36].k5}–${V[32].k5}`, unit:'', v};
+    default: return null;
+  }
+}
+function hrLine(s) {
+  switch (s.type) {
+    case 'E': return `Keep heart rate under ${pct(.79)}. In the heat, 8:00–8:45/km is fine.`;
+    case 'REC': return `Recovery: keep heart rate under ${pct(.76)}.`;
+    case 'L': case 'LM': case 'LHM': return `Start around ${pct(.73)}; let it drift no higher than ${pct(.84)} by the end.`;
+    case 'T': return `Comfortably hard. Heart rate reaches about ${pct(.88)}–${pct(.92)} by the end of each rep.`;
+    case 'I': return `Hard but controlled. Heart rate climbs to about ${pct(.93)}–${pct(.98)} by the end of each rep.`;
+    case 'R': return 'Fast and relaxed, with good form. Jog the full recovery so every rep is the same speed.';
+    case 'HM': case 'REH': return 'Controlled: the effort you could hold for just over two hours. No faster than written.';
+    case 'TEST': return 'Hard, even effort. Start a little slower than you think and finish strong.';
+    case 'RACE': return 'Hold back early. The second half is where the race is run.';
+    case 'REST': return '';
+    default: return '';
+  }
+}
+const decorate = (txt, s) => { const v = phaseV(s.phase), P = V[v];
+  return txt
+    .replace(/at T\b/g, `at T <strong>${P.t}/km</strong>`)
+    .replace(/at I\b/g, `at I <strong>${P.i}/km</strong>`)
+    .replace(/(\d+) × 300 m at R\b/g, `$1 × 300 m at R <strong>${P.r3} s</strong>`)
+    .replace(/(\d+) × 200 m at R\b/g, `$1 × 200 m at R <strong>${P.r2} s</strong>`)
+    .replace(/at M\b/g, `at M <strong>${P.m}/km</strong>`)
+    .replace(/at (goal )?HM pace/g, (m) => `${m} <strong>${hmPace(v)}/km</strong>`); };
+const GYM = {A:'Gym A: heavy lifting, about 40 min', B:'Gym B: jumps and single-leg work, about 25 min', 'B-light':'Gym B, light: half the jumps', core:'Core only, 10 min'};
+const EXTRA = {strides:'Strides: 15–20 s light and quick, 45–60 s easy between', hills:'Hill sprints: 6–8% hill, all-out, walk down, full rest'};
+
+function weekOf(dateIso) { return SESS.find(x => x.date === dateIso)?.week; }
+
+function renderStrip() {
+  const w = weekOf(selected); const days = SESS.filter(s => s.week === w);
+  const t = todayIso();
+  document.getElementById('strip').innerHTML = days.map(s => {
+    const d = parseD(s.date), done = DB.log[s.id]?.done;
+    return `<button class="k-${s.type}${s.date===selected?' sel':''}${s.date===t?' today':''}" data-date="${s.date}" aria-pressed="${s.date===selected}" aria-label="${nice(s.date)}: ${s.title}${done?', done':''}">
+      <span>${s.day.slice(0,2)}</span><span class="d num">${d.getDate()}</span><span class="bar"></span><span class="tick">${done?'✓':''}</span></button>`;
+  }).join('');
+}
+
+function renderBib(justDone) {
+  const s = SESS.find(x => x.date === selected); const L = DB.log[s.id] || {};
+  const ph = PLAN.phases.find(p => p.id === s.phase);
+  const pi = paceInfo(s); const hr = hrLine(s);
+  const steps = s.detail.split(' · ');
+  const stepsHtml = `<ol class="steps${steps.length===1?' one':''}">${steps.map(x => `<li>${decorate(x, s)}</li>`).join('')}</ol>`;
+  const chips = [];
+  if (s.km) chips.push(`<span class="chip num">${s.type==='RACE'?'21.1':s.km} km planned</span>`);
+  if (s.gym) chips.push(`<span class="chip">${GYM[s.gym]}</span>`);
+  if (s.extra && EXTRA[s.extra]) chips.push(`<span class="chip">${EXTRA[s.extra]}</span>`);
+  const logged = L.done ? [L.km && `${L.km} km`, L.time, L.time && L.km && `${fmt(toSec(L.time)/L.km)}/km`, L.hr && `${L.hr} bpm`].filter(Boolean).join(', ') : '';
+  const bib = document.getElementById('bib');
+  bib.className = `bib k-${s.type}${L.done?' done':''}${justDone?' justdone':''}`;
+  bib.innerHTML = `
+    <div class="band"><span>Week ${s.week} of 15</span><span>${ph.name}</span></div>
+    <span class="pin a"></span><span class="pin b"></span><span class="pin c"></span><span class="pin d"></span>
+    <span class="stamp" aria-hidden="true">Done</span>
+    <div class="body">
+      <p class="date">${nice(s.date)}${s.date===todayIso()?', today':''}</p>
+      <h2>${s.title}</h2>
+      ${pi ? `<div class="pace num"><span class="lab">${pi.lab}</span><span class="big">${pi.big}</span><span class="unit">${pi.unit}</span></div>` : ''}
+      ${hr ? `<p class="hr num">${hr}</p>` : ''}
+      ${stepsHtml}
+      ${chips.length ? `<div class="meta">${chips.join('')}</div>` : ''}
+      ${s.type !== 'REST' ? `<div class="actions">
+        <button class="btn primary" id="doneBtn">${L.done ? 'Mark not done' : 'Mark done'}</button>
+        <button class="btn ghost" id="logBtn">${L.done ? 'Edit log' : 'Log details'}</button></div>
+        ${logged ? `<p class="logline num">Logged: ${logged}</p>` : ''}` : ''}
+    </div>`;
+  document.getElementById('backToday').hidden = selected === clampDay(todayIso());
+  const v = phaseV(s.phase);
+  document.getElementById('phaseNote').textContent = `${ph.name}: ${ph.goal} Paces use VDOT ${v}${s.phase==='base'?'.':s.phase==='build'?(v5()?' from your 5K test.':' until you enter your 5K test.'):(v10()?' from your 10K test.':' until you enter your 10K test.')}`;
+  const db = document.getElementById('doneBtn'); if (db) db.onclick = () => toggleDone(s.id, true);
+  const lb = document.getElementById('logBtn'); if (lb) lb.onclick = () => openLog(s.id);
+}
+
+function renderCountdown() {
+  const ms = parseD(raceDay) - parseD(todayIso()); const days = Math.round(ms / 864e5);
+  document.getElementById('countdown').innerHTML = days > 1 ? `<b>${days}</b> days to go` : days === 1 ? '<b>Tomorrow</b>' : days === 0 ? '<b>Race day</b>' : 'Race done';
+}
+
+function toggleDone(id, fromBib) {
+  const L = DB.log[id] = DB.log[id] || {}; L.done = !L.done;
+  if (L.done && L.km == null) L.km = BYID[id].type === 'RACE' ? 21.1 : BYID[id].km;
+  L.ts = Date.now(); save();
+  if (fromBib) { renderBib(L.done); renderStrip(); } else renderAll();
+  toast(L.done ? 'Marked done' : 'Marked not done');
+}
+
+// ---------- log dialog ----------
+const dlg = document.getElementById('logDlg'); let editing = null;
+function openLog(id) {
+  editing = id; const s = BYID[id], L = DB.log[id] || {};
+  document.getElementById('logSub').textContent = `${nice(s.date)}: ${s.title}`;
+  document.getElementById('fDone').checked = L.done ?? true;
+  document.getElementById('fKm').value = L.km ?? (s.type==='RACE' ? 21.1 : s.km || '');
+  document.getElementById('fTime').value = L.time || '';
+  document.getElementById('fHr').value = L.hr || '';
+  document.getElementById('fNotes').value = L.notes || '';
+  dlg.querySelectorAll('input[name=feel]').forEach(r => r.checked = String(L.feel) === r.value);
+  updPace(); dlg.showModal();
+}
+function updPace() { const km = parseFloat(document.getElementById('fKm').value), t = toSec(document.getElementById('fTime').value);
+  document.getElementById('fPace').value = km > 0 && t ? `${fmt(t/km)}/km` : ''; }
+['fKm','fTime'].forEach(i => document.getElementById(i).addEventListener('input', updPace));
+dlg.addEventListener('close', () => {
+  if (dlg.returnValue !== 'save' || !editing) return;
+  const t = document.getElementById('fTime').value.trim();
+  if (t && toSec(t) == null) { toast('Time not saved: use h:mm:ss or mm:ss'); }
+  const feel = dlg.querySelector('input[name=feel]:checked');
+  const wasDone = DB.log[editing]?.done;
+  DB.log[editing] = { done: document.getElementById('fDone').checked,
+    km: parseFloat(document.getElementById('fKm').value) || null,
+    time: toSec(t) ? t : '', hr: parseInt(document.getElementById('fHr').value) || null,
+    feel: feel ? Number(feel.value) : null, notes: document.getElementById('fNotes').value.trim(), ts: Date.now() };
+  save(); renderAll(DB.log[editing].done && !wasDone); toast('Log saved');
+});
+
+// ---------- plan tab ----------
+function renderPlan() {
+  const cw = weekOf(clampDay(todayIso()));
+  let html = '';
+  for (const ph of PLAN.phases) {
+    html += `<div class="phase"><h4>${ph.name}, weeks ${ph.weeks[0]}–${ph.weeks[1]}</h4><p>${ph.goal}</p></div>`;
+    for (const W of PLAN.weeks.filter(w => w.phase === ph.id)) {
+      const days = SESS.filter(s => s.week === W.week);
+      const runs = days.filter(s => s.type !== 'REST');
+      const doneKm = runs.reduce((a, s) => a + (DB.log[s.id]?.done && s.type !== 'RACE' ? (DB.log[s.id].km || 0) : 0), 0);
+      const doneN = runs.filter(s => DB.log[s.id]?.done).length;
+      const pctDone = Math.min(100, W.km ? doneKm / W.km * 100 : 0);
+      html += `<details class="week${W.week===cw?' cur':''}" ${W.week===cw?'open':''}>
+        <summary><span><span class="wt">Week ${W.week}</span><span class="wd">${short(W.start)}–${short(W.end)}</span></span>
+        <span class="wk num"><span>${doneN} of ${runs.length} runs</span><span class="wd">${Math.round(doneKm)} of ${Math.round(W.km)} km</span></span>
+        <span class="prog" aria-hidden="true"><i style="width:${pctDone}%"></i></span></summary>
+        ${days.map(s => { const d = DB.log[s.id]?.done; return `<div class="day k-${s.type}">
+          <span class="dot" aria-hidden="true"></span>
+          <span class="dd">${s.day}<br>${short(s.date)}</span>
+          <button class="open" data-date="${s.date}"><span class="tt">${s.title}</span><br><span class="km num">${s.type==='REST'?(s.day==='Mon'||s.day==='Fri'?'Optional core':''):(s.type==='RACE'?'21.1':s.km)+' km'}</span></button>
+          ${s.type==='REST' ? '<span></span>' : `<button class="check" data-id="${s.id}" aria-pressed="${!!d}" aria-label="${d?'Mark not done':'Mark done'}: ${s.title}, ${nice(s.date)}">${d?'<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 8.5l3.2 3L13 4.5"/></svg>':''}</button>`}
+        </div>`; }).join('')}
+      </details>`;
+    }
+  }
+  document.getElementById('planList').innerHTML = html;
+}
+
+// ---------- paces tab ----------
+function renderPaces() {
+  document.getElementById('t5').value = DB.tests.t5k || '';
+  document.getElementById('t10').value = DB.tests.t10k || '';
+  document.getElementById('hrmax').value = hrMax();
+  const a = v5(), b = v10(), cur = b || a || 32;
+  const sel = document.getElementById('vdotView');
+  if (!sel.options.length) sel.innerHTML = VS.map(v => `<option value="${v}">${v}</option>`).join('');
+  if (!sel.dataset.touched) sel.value = cur;
+  const show = Number(sel.value);
+  const goal = b || a;
+  document.getElementById('vdotResult').innerHTML = goal
+    ? `<div class="num big">${V[goal].hm}</div><div style="font-weight:700;margin:2px 0 4px">Predicted half marathon</div><div class="num" style="color:var(--muted);font-size:15px">VDOT ${goal} from your ${b ? '10K' : '5K'} test, ${hmPace(goal)}/km. Race-phase paces use ${b ? 'this' : 'it until you enter the 10K'}.</div>`
+    : `<div class="num big">2:07</div><div style="font-weight:700;margin:2px 0 4px">Target</div><div style="color:var(--muted);font-size:15px">VDOT 34. You start at VDOT 32 (2:13:49). Enter a test time to update.</div>`;
+  const P = V[show];
+  document.getElementById('paceTable').innerHTML = `
+    <tr><th>Type</th><th>Pace</th><th>Use</th></tr>
+    <tr><td>Easy & long</td><td>${P.e}/km</td><td>Go by heart rate in the heat</td></tr>
+    <tr><td>M</td><td>${P.m}/km</td><td>Long-run finishes, build phase</td></tr>
+    <tr class="on"><td>HM</td><td>${hmPace(show)}/km</td><td>Race pace, ${P.hm}</td></tr>
+    <tr><td>T</td><td>${P.t}/km</td><td>Tuesday threshold</td></tr>
+    <tr><td>I</td><td>${P.i}/km, ${P.i4}/400 m</td><td>4 × 4 min</td></tr>
+    <tr><td>R</td><td>${P.r2} s/200 m, ${P.r3} s/300 m</td><td>Short reps, full jog</td></tr>
+    <tr><td>Tests</td><td>5K ${P.k5}, 10K ${P.k10}</td><td>What VDOT ${show} runs</td></tr>`;
+  const H = hrMax();
+  document.getElementById('hrTable').innerHTML = `
+    <tr><th>Run</th><th>Heart rate</th><th>Source</th></tr>
+    <tr><td>Recovery</td><td>under ${pct(.76)}</td><td>Pfitzinger, 76% of max</td></tr>
+    <tr><td>Easy</td><td>under ${pct(.79)}</td><td>Daniels, 65–79%</td></tr>
+    <tr><td>Long</td><td>${pct(.75)}–${pct(.84)}</td><td>Pfitzinger, 75–84%</td></tr>
+    <tr><td>Threshold</td><td>${pct(.88)}–${pct(.92)}</td><td>Daniels, 88–92%</td></tr>`;
+}
+const onTest = (id, key) => document.getElementById(id).addEventListener('change', e => {
+  const v = e.target.value.trim();
+  if (v && toSec(v) == null) { toast('Use mm:ss, for example 27:45'); return; }
+  DB.tests[key] = v; save(); document.getElementById('vdotView').dataset.touched = ''; renderAll(); toast(v ? 'Test saved, paces updated' : 'Test cleared'); });
+onTest('t5', 't5k'); onTest('t10', 't10k');
+document.getElementById('vdotView').addEventListener('change', e => { e.target.dataset.touched = '1'; renderPaces(); });
+document.getElementById('hrmax').addEventListener('change', e => { const v = parseInt(e.target.value); if (v >= 150 && v <= 230) { DB.hrMax = v; save(); renderAll(); } });
+
+// ---------- progress tab ----------
+function renderProgress() {
+  const t = todayIso();
+  const past = SESS.filter(s => s.type !== 'REST' && s.date <= t);
+  const doneAll = SESS.filter(s => DB.log[s.id]?.done);
+  const km = doneAll.reduce((a, s) => a + (DB.log[s.id].km || 0), 0);
+  const longest = doneAll.reduce((a, s) => Math.max(a, DB.log[s.id].km || 0), 0);
+  const runs = SESS.filter(s => s.type !== 'REST').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="v num">${doneAll.length}<span style="font-size:16px;color:var(--muted)"> / ${runs}</span></div><div class="l">Runs done</div></div>
+    <div class="stat"><div class="v num">${Math.round(km)} km</div><div class="l">Logged in total</div></div>
+    <div class="stat"><div class="v num">${past.length ? Math.round(doneAll.filter(s => s.date <= t).length / past.length * 100) : 0}%</div><div class="l">Of runs due so far</div></div>
+    <div class="stat"><div class="v num">${longest ? longest.toFixed(1) : 0} km</div><div class="l">Longest run logged</div></div>`;
+  const W = PLAN.weeks, max = 44, x0 = 30, y0 = 10, h = 170, bw = (480 - x0 - 6) / W.length;
+  const y = v => y0 + h - v / max * h;
+  let svg = `<g stroke="var(--line)">${[10,20,30,40].map(v => `<line x1="${x0}" x2="474" y1="${y(v)}" y2="${y(v)}"/>`).join('')}</g>`;
+  svg += [10,20,30,40].map(v => `<text x="${x0-6}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${v}</text>`).join('');
+  W.forEach((w, i) => { const x = x0 + i * bw + 3, bwi = bw - 6;
+    const logged = SESS.filter(s => s.week === w.week && DB.log[s.id]?.done && s.type !== 'RACE').reduce((a, s) => a + (DB.log[s.id].km || 0), 0);
+    svg += `<rect x="${x}" y="${y(w.km)}" width="${bwi}" height="${h + y0 - y(w.km)}" fill="none" stroke="var(--stone)" stroke-width="1.5" rx="2"><title>Week ${w.week}: ${w.km} km planned</title></rect>`;
+    if (logged) svg += `<rect x="${x+3}" y="${y(Math.min(logged, max))}" width="${bwi-6}" height="${h + y0 - y(Math.min(logged, max))}" fill="var(--lagoon)" rx="2"><title>Week ${w.week}: ${logged.toFixed(1)} km logged</title></rect>`;
+    svg += `<text x="${x + bwi/2}" y="${y0 + h + 16}" text-anchor="middle" font-size="11" fill="var(--muted)">${w.week}</text>`; });
+  svg += `<text x="${x0}" y="${y0 + h + 34}" font-size="11" fill="var(--muted)">Week</text>`;
+  const c = document.getElementById('chart'); c.setAttribute('viewBox', '0 0 480 220'); c.innerHTML = svg;
+}
+const download = (name, text, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+document.getElementById('exportJson').onclick = () => { download(`half-marathon-backup-${todayIso()}.json`, JSON.stringify(DB, null, 1), 'application/json'); toast('Backup downloaded'); };
+document.getElementById('importJson').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').addEventListener('change', async e => { const f = e.target.files[0]; if (!f) return;
+  try { const d = JSON.parse(await f.text()); if (!d.log) throw 0; DB = Object.assign({log:{}, tests:{}, hrMax: PLAN.hrMax}, d); save(); renderAll(); toast('Backup restored'); }
+  catch (_) { toast('That file is not a backup from this app'); } e.target.value = ''; });
+document.getElementById('exportCsv').onclick = () => {
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['Date','Week','Day','Session','Planned km','Done','Actual km','Time','Avg HR','Feel (1-5)','Notes'].map(q).join(',')];
+  for (const s of SESS) { const L = DB.log[s.id] || {};
+    rows.push([s.date, s.week, s.day, s.title, s.type==='RACE'?21.1:s.km, L.done?'Yes':'', L.km ?? '', L.time ?? '', L.hr ?? '', L.feel ?? '', L.notes ?? ''].map(q).join(',')); }
+  download(`half-marathon-log-${todayIso()}.csv`, rows.join('\n'), 'text/csv'); toast('Log exported'); };
+
+// ---------- guide ----------
+document.getElementById('guideBody').innerHTML = `
+<details open><summary>The week at a glance</summary><ul>
+<li>Tuesday: threshold (T), comfortably hard.</li><li>Wednesday: easy run with strides or hill sprints, then Gym B.</li>
+<li>Thursday: easy and hill sprints (base), R or I (build), or half-marathon pace (race phase).</li>
+<li>Saturday: long run, early morning.</li><li>Sunday: recovery run, then Gym A.</li><li>Monday and Friday: rest.</li></ul></details>
+<details><summary>Gym A: heavy (Sunday)</summary><table><tr><th>Exercise</th><th>Sets × reps</th></tr>
+<tr><td>Squat or trap-bar deadlift</td><td>3 × 5, heavy (2 reps left in you)</td></tr><tr><td>Romanian deadlift</td><td>3 × 6</td></tr>
+<tr><td>Bulgarian split squat</td><td>3 × 6 per leg</td></tr><tr><td>Standing calf raise</td><td>3 × 8, heavy</td></tr>
+<tr><td>Bent-knee calf raise</td><td>3 × 10</td></tr><tr><td>Plank, side plank, dead bug</td><td>2 rounds</td></tr></table>
+<ul><li>Weeks 1–2: moderate weights, 3 × 8. Weeks 3–9: heavy, 3 × 4–6. Weeks 10–13: same weights, 2 sets. Week 14: core only. Race week: nothing.</li></ul></details>
+<details><summary>Gym B: power (Wednesday)</summary><table><tr><th>Exercise</th><th>Sets × reps</th></tr>
+<tr><td>Pogo hops</td><td>3 × 20 contacts</td></tr><tr><td>Box jumps (step down)</td><td>3 × 5</td></tr><tr><td>Bounding, from week 5</td><td>3 × 20 m</td></tr>
+<tr><td>Single-leg Romanian deadlift</td><td>3 × 8 per leg</td></tr><tr><td>Isometric hold (optional)</td><td>6 × 5 s, push hard</td></tr><tr><td>Plank, side plank, dead bug</td><td>2 rounds</td></tr></table></details>
+<details><summary>Hill sprints and strides</summary><ul>
+<li>Hill sprints: a 6–8% hill, 8–10 s all-out, walk down and rest at least 3 minutes. If breathing hasn't settled, rest longer or stop.</li>
+<li>Strides: 15–20 s light and quick at about R pace, never a sprint. 45–60 s easy between.</li></ul></details>
+<details><summary>Heat and fuel</summary><ul>
+<li>Run key sessions before 7am. Your morning long runs have been faster at a lower heart rate than your 4pm ones.</li>
+<li>Weigh yourself before and after long runs; losing more than 2% of body weight starts to hurt.</li>
+<li>Before runs over an hour, eat some carbs (a banana, bread with honey). Easy runs under an hour are fine before breakfast.</li>
+<li>From week 10, practise race fuel on long runs. Afterwards, about 1 g of carbs per kg of body weight within 30 minutes, plus protein.</li></ul></details>
+<details><summary>When life gets in the way</summary><ul>
+<li>Missed up to 5 days: carry on and don't make the runs up.</li><li>Missed 1–2 weeks: repeat the last full week, then continue.</li>
+<li>Heavy legs or easy-run heart rate well above normal: swap Thursday's session for an easy run.</li>
+<li>Never cram missed hard sessions into back-to-back days.</li><li>Pain that changes your stride, or a fever: stop and rest.</li></ul></details>
+<details><summary>More</summary><ul>
+<li><a href="${PLAN.docUrl}" target="_blank" rel="noopener">Full plan with sources</a></li>
+<li><a href="half-marathon-plan.xlsx" download>Spreadsheet version (Excel or Google Sheets)</a></li></ul></details>`;
+
+// ---------- tabs ----------
+const ICON = {
+  today:'<path d="M5 4h14v16H5z"/><circle cx="8" cy="7" r=".8"/><circle cx="16" cy="7" r=".8"/><path d="M8 12h8M8 15h5"/>',
+  plan:'<path d="M4 6h16M4 12h16M4 18h10"/>',
+  paces:'<circle cx="12" cy="13" r="7"/><path d="M12 13l3-3M10 3h4"/>',
+  progress:'<path d="M5 20V10M10 20V4M15 20v-7M20 20V8"/>',
+  guide:'<path d="M5 4h10l4 4v12H5z"/><path d="M8 12h8M8 16h6"/>'};
+const TABS = [['today','Today'],['plan','Plan'],['paces','Paces'],['progress','Progress'],['guide','Guide']];
+let tab = 'today';
+document.getElementById('tabs').innerHTML = TABS.map(([k, n]) => `<button data-tab="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>${n}</button>`).join('');
+function show(k) { tab = k; TABS.forEach(([t]) => { document.getElementById('tab-' + t).hidden = t !== k; });
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === k ? 'page' : 'false'));
+  renderAll(); window.scrollTo(0, 0); try { history.replaceState(null, '', '#' + k); } catch (e) {} }
+document.getElementById('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.tab); });
+
+document.getElementById('strip').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; selected = b.dataset.date; renderBib(); renderStrip(); });
+document.getElementById('backToday').onclick = () => { selected = clampDay(todayIso()); renderBib(); renderStrip(); };
+document.getElementById('planList').addEventListener('click', e => {
+  const c = e.target.closest('.check'); if (c) { e.preventDefault(); toggleDone(c.dataset.id, false); return; }
+  const o = e.target.closest('.open'); if (o) { selected = o.dataset.date; show('today'); } });
+
+let toastT; function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
+
+function renderAll(justDone) { renderCountdown(); if (tab === 'today') { renderStrip(); renderBib(justDone); }
+  if (tab === 'plan') renderPlan(); if (tab === 'paces') renderPaces(); if (tab === 'progress') renderProgress(); }
+
+const start = (location.hash || '').slice(1); show(TABS.some(t => t[0] === start) ? start : 'today');
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { const t = clampDay(todayIso()); if (weekOf(t) !== weekOf(selected) && tab === 'today') selected = t; renderAll(); } });
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
