@@ -46,6 +46,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 .top h1{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.01em;margin:0;line-height:1}
 .count{color:var(--muted);font-size:15px}
 .count b{color:var(--ink);font-size:17px}
+.hd-r{text-align:right}
+.sync{font-size:13px;color:var(--muted);margin-top:3px}
+.sync::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--lagoon);margin-right:6px;vertical-align:1px}
+.sync.busy::before{background:var(--dawn)}
+.sync.err{color:var(--coral)}
+.sync.err::before{background:var(--coral)}
+.gs{background:var(--card);border-radius:10px;padding:14px 16px;box-shadow:0 0 0 1.5px var(--line) inset;margin:6px 0 10px}
+.gs p{margin:0 0 10px}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
 
 /* Week strip */
 .strip{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:6px 0 16px}
@@ -206,7 +215,7 @@ dialog .sub{margin:0 0 14px;color:var(--muted);font-size:15px}
 <div class="wrap">
   <header class="top">
     <h1>Feb 6 Half</h1>
-    <div class="count num" id="countdown"></div>
+    <div class="hd-r"><div class="count num" id="countdown"></div><div class="sync" id="syncState" hidden></div></div>
   </header>
 
   <main>
@@ -246,8 +255,10 @@ dialog .sub{margin:0 0 14px;color:var(--muted);font-size:15px}
     <div class="stats" id="stats"></div>
     <svg class="chart" id="chart" viewBox="0 0 480 220" role="img" aria-label="Planned and logged kilometres per week"></svg>
     <div class="legend"><span>Logged km</span><span class="p">Planned km</span></div>
-    <h4>Your data</h4>
-    <p class="lead">Ticks and logs are saved in this browser only. Back them up, or move them to another phone, with these buttons.</p>
+    <h4>Google Sheet</h4>
+    <div class="gs" id="gsBox"></div>
+    <h4>Backup</h4>
+    <p class="lead">Your ticks and logs are always saved on this phone first. A backup file is a second copy you can restore anywhere.</p>
     <div class="tools">
       <button class="btn ghost small" id="exportJson">Back up data</button>
       <button class="btn ghost small" id="importJson">Restore backup</button>
@@ -457,7 +468,7 @@ function renderCountdown() {
 function toggleDone(id, fromBib) {
   const L = DB.log[id] = DB.log[id] || {}; L.done = !L.done;
   if (L.done && L.km == null) L.km = BYID[id].type === 'RACE' ? 21.1 : BYID[id].km;
-  L.ts = Date.now(); save();
+  L.ts = Date.now(); save(); queue(id);
   if (fromBib) { renderBib(L.done); renderStrip(); } else renderAll();
   toast(L.done ? 'Marked done' : 'Marked not done');
 }
@@ -488,7 +499,7 @@ dlg.addEventListener('close', () => {
     km: parseFloat(document.getElementById('fKm').value) || null,
     time: toSec(t) ? t : '', hr: parseInt(document.getElementById('fHr').value) || null,
     feel: feel ? Number(feel.value) : null, notes: document.getElementById('fNotes').value.trim(), ts: Date.now() };
-  save(); renderAll(DB.log[editing].done && !wasDone); toast('Log saved');
+  save(); queue(editing); renderAll(DB.log[editing].done && !wasDone); toast('Log saved');
 });
 
 // ---------- plan tab ----------
@@ -554,10 +565,10 @@ function renderPaces() {
 const onTest = (id, key) => document.getElementById(id).addEventListener('change', e => {
   const v = e.target.value.trim();
   if (v && toSec(v) == null) { toast('Use mm:ss, for example 27:45'); return; }
-  DB.tests[key] = v; save(); document.getElementById('vdotView').dataset.touched = ''; renderAll(); toast(v ? 'Test saved, paces updated' : 'Test cleared'); });
+  DB.tests[key] = v; save(); queueSettings(); document.getElementById('vdotView').dataset.touched = ''; renderAll(); toast(v ? 'Test saved, paces updated' : 'Test cleared'); });
 onTest('t5', 't5k'); onTest('t10', 't10k');
 document.getElementById('vdotView').addEventListener('change', e => { e.target.dataset.touched = '1'; renderPaces(); });
-document.getElementById('hrmax').addEventListener('change', e => { const v = parseInt(e.target.value); if (v >= 150 && v <= 230) { DB.hrMax = v; save(); renderAll(); } });
+document.getElementById('hrmax').addEventListener('change', e => { const v = parseInt(e.target.value); if (v >= 150 && v <= 230) { DB.hrMax = v; save(); queueSettings(); renderAll(); } });
 
 // ---------- progress tab ----------
 function renderProgress() {
@@ -588,7 +599,7 @@ const download = (name, text, type) => { const a = document.createElement('a'); 
 document.getElementById('exportJson').onclick = () => { download(`half-marathon-backup-${todayIso()}.json`, JSON.stringify(DB, null, 1), 'application/json'); toast('Backup downloaded'); };
 document.getElementById('importJson').onclick = () => document.getElementById('importFile').click();
 document.getElementById('importFile').addEventListener('change', async e => { const f = e.target.files[0]; if (!f) return;
-  try { const d = JSON.parse(await f.text()); if (!d.log) throw 0; DB = Object.assign({log:{}, tests:{}, hrMax: PLAN.hrMax}, d); save(); renderAll(); toast('Backup restored'); }
+  try { const d = JSON.parse(await f.text()); if (!d.log) throw 0; const keep = DB.sync; DB = Object.assign({log:{}, tests:{}, hrMax: PLAN.hrMax}, d); DB.sync = keep; Object.values(DB.log).forEach(L => { L.ts = Date.now(); }); Object.keys(DB.log).forEach(queue); queueSettings(); save(); renderAll(); toast('Backup restored'); }
   catch (_) { toast('That file is not a backup from this app'); } e.target.value = ''; });
 document.getElementById('exportCsv').onclick = () => {
   const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -627,6 +638,116 @@ document.getElementById('guideBody').innerHTML = `
 <li><a href="${PLAN.docUrl}" target="_blank" rel="noopener">Full plan with sources</a></li>
 <li><a href="half-marathon-plan.xlsx" download>Spreadsheet version (Excel or Google Sheets)</a></li></ul></details>`;
 
+
+// ---------- Google Sheet sync ----------
+const SYNC = () => DB.sync || (DB.sync = {url:'', sheetUrl:'', last:0, pending:[], settingsRev:0, sentRev:0});
+let syncing = false, syncTimer = null, syncErr = '', resync = false;
+const validUrl = u => /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(String(u).trim());
+const appLink = () => location.origin + location.pathname;
+function queue(id) { const s = SYNC(); if (!s.url) return; if (!s.pending.includes(id)) s.pending.push(id); save(); scheduleSync(); }
+function queueSettings() { const s = SYNC(); if (!s.url) return; s.settingsRev = (s.settingsRev || 0) + 1; save(); scheduleSync(); }
+function scheduleSync(ms = 600) { clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, ms); }
+async function call(body) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 30000);
+  try {
+    const opts = body ? {method: 'POST', body: JSON.stringify(body), signal: ctl.signal} : {signal: ctl.signal};
+    const r = await fetch(SYNC().url, opts);
+    if (!r.ok) throw new Error(`The sheet answered ${r.status}`);
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'The sheet did not accept the change');
+    return j;
+  } finally { clearTimeout(t); }
+}
+function mergeRemote(j) {
+  const s = SYNC(), R = j.log || {};
+  for (const id of Object.keys(R)) {
+    if (!BYID[id]) continue;
+    const r = R[id], L = DB.log[id];
+    if (!L || (r.ts || 0) > (L.ts || 0)) {
+      DB.log[id] = {done: !!r.done, km: r.km ?? null, time: r.time || '', hr: r.hr ?? null, feel: r.feel ?? null, notes: r.notes || '', ts: r.ts || 0};
+    }
+  }
+  for (const id of Object.keys(DB.log)) {
+    const L = DB.log[id];
+    if (L && (L.ts || 0) > ((R[id] && R[id].ts) || 0) && !s.pending.includes(id)) s.pending.push(id);
+  }
+  if ((s.settingsRev || 0) === (s.sentRev || 0) && j.tests) {
+    DB.tests = {t5k: j.tests.t5k || '', t10k: j.tests.t10k || ''};
+    if (j.hrMax) DB.hrMax = j.hrMax;
+  }
+  if (j.sheetUrl) s.sheetUrl = j.sheetUrl;
+}
+async function syncNow() {
+  const s = SYNC(); if (!s.url) return;
+  if (syncing) { resync = true; return; }
+  if (!navigator.onLine) { syncErr = 'offline'; renderSyncState(); return; }
+  syncing = true; syncErr = ''; renderSyncState();
+  try {
+    if (!s.pending.length && (s.settingsRev || 0) === (s.sentRev || 0)) mergeRemote(await call(null));
+    if (s.pending.length || (s.settingsRev || 0) !== (s.sentRev || 0)) {
+      const ids = s.pending.slice(), rev = s.settingsRev || 0;
+      const body = {log: {}};
+      ids.forEach(id => { body.log[id] = DB.log[id] || {done: false, km: null, time: '', hr: null, feel: null, notes: '', ts: Date.now()}; });
+      if (rev !== (s.sentRev || 0)) body.settings = {t5k: DB.tests.t5k || '', t10k: DB.tests.t10k || '', hrMax: hrMax()};
+      const sentTs = Object.fromEntries(ids.map(id => [id, body.log[id].ts || 0]));
+      const j = await call(body);
+      s.pending = s.pending.filter(id => !(id in sentTs) || ((DB.log[id] && DB.log[id].ts) || 0) > sentTs[id]);
+      s.sentRev = rev;
+      mergeRemote(j);
+    }
+    s.last = Date.now(); save();
+  } catch (e) {
+    syncErr = e.name === 'AbortError' ? 'The sheet took too long to answer' : (navigator.onLine ? (e.message || 'Sync failed') : 'offline');
+  } finally {
+    syncing = false; renderAll();
+    if (resync) { resync = false; scheduleSync(300); }
+  }
+}
+function connectSheet(url) {
+  const s = SYNC(); s.url = url.trim(); s.last = 0;
+  s.pending = Object.keys(DB.log).filter(id => DB.log[id] && DB.log[id].ts);
+  const custom = DB.tests.t5k || DB.tests.t10k || hrMax() !== PLAN.hrMax;
+  s.sentRev = s.settingsRev || 0; if (custom) s.settingsRev = s.sentRev + 1;
+  save(); syncErr = ''; syncNow().then(() => { if (!syncErr) toast('Connected to your Google Sheet'); else toast('Could not reach the sheet. Check the link.'); });
+}
+const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? `${m} min ago` : m < 1440 ? `${Math.round(m / 60)} h ago` : `${Math.round(m / 1440)} d ago`; };
+function renderSyncState() {
+  const el = document.getElementById('syncState'), s = SYNC();
+  if (!s.url) { el.hidden = true; return; }
+  el.hidden = false; el.className = 'sync';
+  const waiting = s.pending.length + ((s.settingsRev || 0) !== (s.sentRev || 0) ? 1 : 0);
+  if (syncing) { el.classList.add('busy'); el.textContent = 'Syncing'; }
+  else if (syncErr === 'offline') { el.classList.add('err'); el.textContent = waiting ? `Offline, ${waiting} to sync` : 'Offline'; }
+  else if (syncErr) { el.classList.add('err'); el.textContent = 'Sheet not synced'; }
+  else if (waiting) { el.classList.add('busy'); el.textContent = `${waiting} to sync`; }
+  else el.textContent = 'Sheet synced';
+}
+function renderSheetBox() {
+  const box = document.getElementById('gsBox'), s = SYNC();
+  if (!s.url) {
+    box.innerHTML = `<p>Save every run to your Google Sheet and keep any phone or computer in sync. Paste the web app link from the sheet's script; it ends in <b>/exec</b>.</p>
+      <div class="field"><label for="gsUrl">Sheet web app link</label><input id="gsUrl" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off"></div>
+      <button class="btn primary small" id="gsConnect">Connect</button>`;
+    document.getElementById('gsConnect').onclick = () => { const u = document.getElementById('gsUrl').value.trim();
+      if (!validUrl(u)) { toast('Paste the link that ends in /exec'); return; } connectSheet(u); };
+    return;
+  }
+  const waiting = s.pending.length + ((s.settingsRev || 0) !== (s.sentRev || 0) ? 1 : 0);
+  const status = syncing ? 'Syncing now.' : syncErr ? (syncErr === 'offline' ? 'You are offline. Changes are saved on this phone and will sync when you are back online.' : `Last sync failed: ${syncErr}.`)
+    : s.last ? `Last synced ${ago(s.last)}${waiting ? `, ${waiting} change${waiting > 1 ? 's' : ''} waiting` : ''}.` : 'Not synced yet.';
+  box.innerHTML = `<p>Connected. ${status}</p>
+    <div class="tools">
+      ${s.sheetUrl ? `<a class="btn ghost small" href="${s.sheetUrl}" target="_blank" rel="noopener">Open Google Sheet</a>` : ''}
+      <button class="btn ghost small" id="gsSync">Sync now</button>
+      <button class="btn ghost small" id="gsLink">Copy link for another phone</button>
+      <button class="btn ghost small" id="gsOff">Disconnect</button></div>`;
+  document.getElementById('gsSync').onclick = () => syncNow();
+  document.getElementById('gsLink').onclick = async () => { const link = `${appLink()}#connect=${encodeURIComponent(s.url)}`;
+    try { await navigator.clipboard.writeText(link); toast('Link copied. Open it on the other phone.'); }
+    catch (e) { prompt('Copy this link and open it on the other phone:', link); } };
+  document.getElementById('gsOff').onclick = () => { DB.sync = {url:'', sheetUrl:'', last:0, pending:[], settingsRev:0, sentRev:0}; save(); renderAll(); toast('Disconnected. Your logs stay on this phone.'); };
+}
+
 // ---------- tabs ----------
 const ICON = {
   today:'<path d="M5 4h14v16H5z"/><circle cx="8" cy="7" r=".8"/><circle cx="16" cy="7" r=".8"/><path d="M8 12h8M8 15h5"/>',
@@ -650,11 +771,15 @@ document.getElementById('planList').addEventListener('click', e => {
 
 let toastT; function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
 
-function renderAll(justDone) { renderCountdown(); if (tab === 'today') { renderStrip(); renderBib(justDone); }
-  if (tab === 'plan') renderPlan(); if (tab === 'paces') renderPaces(); if (tab === 'progress') renderProgress(); }
+function renderAll(justDone) { renderCountdown(); renderSyncState(); if (tab === 'today') { renderStrip(); renderBib(justDone); }
+  if (tab === 'plan') renderPlan(); if (tab === 'paces') renderPaces(); if (tab === 'progress') { renderProgress(); renderSheetBox(); } }
 
-const start = (location.hash || '').slice(1); show(TABS.some(t => t[0] === start) ? start : 'today');
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { const t = clampDay(todayIso()); if (weekOf(t) !== weekOf(selected) && tab === 'today') selected = t; renderAll(); } });
+let start = (location.hash || '').slice(1);
+if (start.startsWith('connect=')) { const u = decodeURIComponent(start.slice(8)); start = 'progress'; if (validUrl(u)) connectSheet(u); else setTimeout(() => toast('That connect link is not a Google Sheet web app link'), 300); }
+show(TABS.some(t => t[0] === start) ? start : 'today');
+syncNow();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { const t = clampDay(todayIso()); if (weekOf(t) !== weekOf(selected) && tab === 'today') selected = t; renderAll(); syncNow(); } });
+window.addEventListener('online', () => syncNow());
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
 </script>
