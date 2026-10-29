@@ -202,6 +202,19 @@ dialog .sub{margin:0 0 14px;color:var(--muted);font-size:15px}
 .feel input:checked + span{font-weight:700}
 .feel label:has(input:checked){background:var(--ink);color:var(--card)}
 .toggle{display:flex;align-items:center;gap:10px;font-weight:700;margin:0 0 12px}
+.flab{font-weight:700;font-size:15px}
+.wheel{position:relative;display:grid;grid-template-columns:repeat(3,1fr);height:200px;margin-top:4px;border-radius:12px;background:var(--bg);overflow:hidden;user-select:none;-webkit-user-select:none}
+.wheel::before{content:'';position:absolute;left:6px;right:6px;top:80px;height:40px;border-radius:10px;background:var(--soft);pointer-events:none}
+.wc{position:relative}
+.wcol{position:relative;height:200px;box-sizing:border-box;padding:80px 0;overflow-y:scroll;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;outline:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 32%,#000 68%,transparent)}
+.wcol::-webkit-scrollbar{display:none}
+.wcol>div{height:40px;line-height:40px;scroll-snap-align:center;text-align:right;padding-right:calc(50% + 2px);font-size:23px;color:var(--muted);font-variant-numeric:tabular-nums;cursor:pointer}
+.wcol>div.on{color:var(--ink)}
+.wcol:focus-visible{box-shadow:inset 0 0 0 2px var(--focus);border-radius:10px}
+.wunit{position:absolute;left:calc(50% + 8px);top:100px;transform:translateY(-50%);font-size:16px;font-weight:700;pointer-events:none}
+.wnote{margin:6px 2px 0;font-size:15px;color:var(--muted)}
+.wnote b{color:var(--ink)}
 .toggle input{width:22px;height:22px}
 .dlg-actions{display:flex;gap:10px;margin-top:6px}
 .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--card);
@@ -282,13 +295,13 @@ dialog .sub{margin:0 0 14px;color:var(--muted);font-size:15px}
     <h3 id="logTitle">Log run</h3>
     <p class="sub" id="logSub"></p>
     <label class="toggle"><input type="checkbox" id="fDone"> Done</label>
-    <div class="row2">
-      <div class="field"><label for="fKm">Distance (km)</label><input id="fKm" type="number" step="0.01" min="0" inputmode="decimal"></div>
-      <div class="field"><label for="fTime">Time</label><input id="fTime" type="text" placeholder="h:mm:ss or mm:ss" inputmode="numeric"></div>
+    <div class="field"><span class="flab" id="fTimeLab">Time</span>
+      <div class="wheel" id="fTime" role="group" aria-labelledby="fTimeLab"></div>
+      <p class="wnote num" id="fPace" aria-live="polite"></p>
     </div>
     <div class="row2">
+      <div class="field"><label for="fKm">Distance (km)</label><input id="fKm" type="number" step="0.01" min="0" inputmode="decimal"></div>
       <div class="field"><label for="fHr">Average heart rate</label><input id="fHr" type="number" min="60" max="230" inputmode="numeric"></div>
-      <div class="field"><label>Pace</label><input id="fPace" type="text" readonly tabindex="-1" aria-label="Pace, calculated"></div>
     </div>
     <div class="field"><span style="font-weight:700;font-size:15px">How did it feel?</span>
       <div class="feel" role="radiogroup" aria-label="How did it feel">
@@ -480,24 +493,69 @@ function openLog(id) {
   document.getElementById('logSub').textContent = `${nice(s.date)}: ${s.title}`;
   document.getElementById('fDone').checked = L.done ?? true;
   document.getElementById('fKm').value = L.km ?? (s.type==='RACE' ? 21.1 : s.km || '');
-  document.getElementById('fTime').value = L.time || '';
   document.getElementById('fHr').value = L.hr || '';
   document.getElementById('fNotes').value = L.notes || '';
   dlg.querySelectorAll('input[name=feel]').forEach(r => r.checked = String(L.feel) === r.value);
-  updPace(); dlg.showModal();
+  const logged = toSec(L.time);
+  estimated = !logged;
+  dlg.showModal();
+  wsetSecs(logged || estimateSecs(s)); updPace();
 }
-function updPace() { const km = parseFloat(document.getElementById('fKm').value), t = toSec(document.getElementById('fTime').value);
-  document.getElementById('fPace').value = km > 0 && t ? `${fmt(t/km)}/km` : ''; }
-['fKm','fTime'].forEach(i => document.getElementById(i).addEventListener('input', updPace));
+// ---------- time wheel (hours / min / sec), like the iPhone timer ----------
+const ROW = 40, WHEEL = [['h', 'hours', 6], ['m', 'min', 60], ['s', 'sec', 60]];
+const wheelEl = document.getElementById('fTime');
+wheelEl.innerHTML = WHEEL.map(([k, unit, n]) => `<div class="wc"><div class="wcol" data-k="${k}" data-unit="${unit}" tabindex="0" role="spinbutton" aria-label="${unit}" aria-valuemin="0" aria-valuemax="${n - 1}" aria-valuenow="0">${Array.from({length: n}, (_, i) => `<div data-i="${i}" aria-hidden="true">${i}</div>`).join('')}</div><span class="wunit" aria-hidden="true">${unit}</span></div>`).join('');
+const wcols = [...wheelEl.querySelectorAll('.wcol')];
+const wval = {h: 0, m: 0, s: 0};
+let estimated = false;
+function wmark(col, i) {
+  col.querySelector('.on')?.classList.remove('on'); col.children[i]?.classList.add('on');
+  col.setAttribute('aria-valuenow', i); col.setAttribute('aria-valuetext', `${i} ${col.dataset.unit}`);
+}
+function wset(col, i, smooth) {
+  i = Math.max(0, Math.min(col.children.length - 1, i)); wval[col.dataset.k] = i; wmark(col, i);
+  col.scrollTo({top: i * ROW, behavior: smooth && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'auto'});
+}
+function wsetSecs(sec) {
+  sec = Math.max(0, Math.round(sec || 0));
+  const h = Math.min(5, Math.floor(sec / 3600)), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  wset(wcols[0], h); wset(wcols[1], m); wset(wcols[2], s);
+}
+const wsecs = () => wval.h * 3600 + wval.m * 60 + wval.s;
+function touched() { if (estimated) { estimated = false; } updPace(); }
+wcols.forEach(col => {
+  col.addEventListener('scroll', () => {
+    const i = Math.max(0, Math.min(col.children.length - 1, Math.round(col.scrollTop / ROW)));
+    if (i !== wval[col.dataset.k]) { wval[col.dataset.k] = i; wmark(col, i); touched(); }
+  }, {passive: true});
+  col.addEventListener('click', e => { const d = e.target.closest('[data-i]'); if (d) { wset(col, Number(d.dataset.i), true); touched(); } });
+  col.addEventListener('keydown', e => {
+    const step = {ArrowUp: -1, ArrowDown: 1, PageUp: -5, PageDown: 5}[e.key];
+    const v = wval[col.dataset.k];
+    if (step) { e.preventDefault(); wset(col, v + step, true); touched(); }
+    else if (e.key === 'Home') { e.preventDefault(); wset(col, 0, true); touched(); }
+    else if (e.key === 'End') { e.preventDefault(); wset(col, col.children.length - 1, true); touched(); }
+  });
+});
+function estimateSecs(s) {
+  const km = parseFloat(document.getElementById('fKm').value) || s.km || 0;
+  if (s.type === 'RACE') return toSec(V[phaseV(s.phase)].hm);
+  return Math.round(km * 480 / 60) * 60;
+}
+function updPace() {
+  const km = parseFloat(document.getElementById('fKm').value), t = wsecs(), el = document.getElementById('fPace');
+  const pace = km > 0 && t ? `Pace <b>${fmt(t / km)}/km</b>` : 'Set the time to see your pace';
+  el.innerHTML = estimated ? `${pace}. This is an estimate: set it to your watch time.` : pace;
+}
+document.getElementById('fKm').addEventListener('input', updPace);
 dlg.addEventListener('close', () => {
   if (dlg.returnValue !== 'save' || !editing) return;
-  const t = document.getElementById('fTime').value.trim();
-  if (t && toSec(t) == null) { toast('Time not saved: use h:mm:ss or mm:ss'); }
+  const sec = wsecs(), t = sec ? fmt(sec, true) : '';
   const feel = dlg.querySelector('input[name=feel]:checked');
   const wasDone = DB.log[editing]?.done;
   DB.log[editing] = { done: document.getElementById('fDone').checked,
     km: parseFloat(document.getElementById('fKm').value) || null,
-    time: toSec(t) ? t : '', hr: parseInt(document.getElementById('fHr').value) || null,
+    time: t, hr: parseInt(document.getElementById('fHr').value) || null,
     feel: feel ? Number(feel.value) : null, notes: document.getElementById('fNotes').value.trim(), ts: Date.now() };
   save(); queue(editing); renderAll(DB.log[editing].done && !wasDone); toast('Log saved');
 });
