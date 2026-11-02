@@ -332,8 +332,8 @@ function buildGym_(gy) {
   title('How the gym work progresses');
   table([['Weeks', 'What to do', ''], ['1–2', 'Learn the movements', 'Moderate weights, 3 × 8 in Gym A'], ['3–9', 'Go heavy', '3 × 4–6; skip the sessions marked in test weeks 4 and 8'],
     ['10–13', 'Maintain', 'Same weights, 2 sets; half the jumps in Gym B'], ['14–15', 'Taper', 'Core only in week 14, nothing in race week']]);
-  title('Hill sprints and strides');
-  table([['What', 'How', 'Progression'], ['Hill sprints (Hudson, Snow)', '6–8% hill, 8–10 s all-out, walk down, rest at least 3 min', '2, 4, 6 × 8 s (weeks 1–3); 8 × 8 s (week 5); 8 × 10 s (weeks 6–7); 6 × 10 s to Jan 20'],
+  title('Flat sprints and strides');
+  table([['What', 'How', 'Progression'], ['Flat sprints (instead of hill sprints)', 'Grass, track or flat road; build up 2–3 s, then about 8 s at 90–95% effort; walk back, rest 2–3 min', '2, 4, 6 × 8 s (weeks 1–3); 8 × 8 s (week 5); 8 × 10 s (weeks 6–7); 6 × 10 s to Jan 20'],
     ['Strides (Daniels)', '15–20 s light and quick at about R pace; 45–60 s easy between', 'Never a sprint']]);
   gy.getRange(1, 1, r, 3).setFontFamily(FONT);
 }
