@@ -211,14 +211,14 @@ function buildStart_(st, keep) {
   st.getRange('A3').setValue('Days to race').setFontWeight('bold');
   st.getRange('B3').setFormula('=MAX(0,DATE(2027,2,6)-TODAY())').setFontWeight('bold').setFontSize(14);
   st.getRange('A5').setValue('Your inputs (yellow cells; the app fills these too)').setFontWeight('bold').setFontSize(12).setFontColor(NAVY);
-  st.getRange('A6:A9').setValues([['Max heart rate (bpm)'], ['Starting VDOT (Base phase)'], ['5K test, Sat Nov 21: minutes / seconds'], ['10K test, Sat Dec 19: minutes / seconds']]);
+  st.getRange('A6:A9').setValues([['Max heart rate (bpm)'], ['Starting VDOT (Base phase)'], ['5K race, Sat Nov 14: minutes / seconds'], ['10K test, Sat Dec 19: minutes / seconds']]);
   st.getRange('B6:C9').setValues(keep || [[194, ''], [32, ''], ['', ''], ['', '']]);
   st.getRange('B6:B9').setBackground(YELLOW).setFontColor('#0000FF').setHorizontalAlignment('center');
   st.getRange('C8:C9').setBackground(YELLOW).setFontColor('#0000FF').setHorizontalAlignment('center');
   st.getRange('E6:E9').setValues([['Highest seen in your Strava data (10K, Aug 7, 2026).'], ['From your 5K 28:26 (Feb 4) and 10K 59:54 (Aug 7).'],
     ['Example: 27 and 50 for 27:50.'], ['Example: 58 and 30 for 58:30; 61 and 5 for 1:01:05.']]).setFontSize(9).setFontColor(MUTED);
   st.getRange('A11').setValue('What your tests say').setFontWeight('bold').setFontSize(12).setFontColor(NAVY);
-  st.getRange('A12:A17').setValues([['VDOT from 5K test'], ['VDOT from 10K test'], ['Build-phase VDOT (weeks 5–9)'], ['Race-phase VDOT (weeks 10–15)'], ['Predicted half marathon'], ['Half-marathon pace']]);
+  st.getRange('A12:A17').setValues([['VDOT from 5K test'], ['VDOT from 10K test'], ['VDOT after the 5K race (weeks 4–9)'], ['Race-phase VDOT (weeks 10–15)'], ['Predicted half marathon'], ['Half-marathon pace']]);
   st.getRange('B12:B17').setFormulas([
     ['=IF(N(B8)=0,"",MAX(30,29+SUMPRODUCT(--(Paces!$B$5:$B$15>=TIME(0,B8,N(C8))))))'],
     ['=IF(N(B9)=0,"",MAX(30,29+SUMPRODUCT(--(Paces!$C$5:$C$15>=TIME(0,B9,N(C9))))))'],
@@ -251,9 +251,10 @@ function buildPlan_(pl, plan) {
   pl.getRange(2, 1, n, 7).setValues(vals);
   pl.getRange(2, C.key, n, 3).setValues(S.map(s => [keyOf(s), s.id, '']));
   const hr = "'Start here'!$B$6";
+  const t5w = (S.find(s => s.extra === 'test5k') || {}).week || 0; // base weeks after the 5K race use its VDOT
   pl.getRange(2, C.vdot, n, 2).setFormulas(S.map((_, i) => {
     const r = i + 2;
-    return [`=IF(C${r}="Base",'Start here'!$B$7,IF(C${r}="Build",'Start here'!$B$14,'Start here'!$B$15))`,
+    return [`=IF(C${r}="Base",IF(B${r}>${t5w},'Start here'!$B$14,'Start here'!$B$7),IF(C${r}="Build",'Start here'!$B$14,'Start here'!$B$15))`,
       `=IF(Q${r}="","",IF(Q${r}="E","HR under "&ROUND(${hr}*0.79,0),IF(Q${r}="REC","HR under "&ROUND(${hr}*0.76,0),IF(Q${r}="L","HR "&ROUND(${hr}*0.73,0)&" to "&ROUND(${hr}*0.84,0),INDEX(Paces!$B$5:$K$15,MATCH(H${r},Paces!$A$5:$A$15,0),MATCH(Q${r},Paces!$B$4:$K$4,0))))))`];
   }));
   pl.getRange(2, C.pace, n, 1).setFormulas(S.map((_, i) => [`=IF(AND(N(K${i + 2})>0,N(L${i + 2})>0),L${i + 2}/K${i + 2},"")`]));
