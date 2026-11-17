@@ -4,7 +4,7 @@ A phone-friendly training plan and log for the half marathon on **Saturday, Febr
 
 - **Today**: the day's session as a race bib, with target paces worked out from your current VDOT.
 - **Plan**: all 15 weeks; tick off runs as you go.
-- **Paces**: enter your 5K race (Nov 14) and 10K test (Dec 19) times and every pace updates.
+- **Paces**: enter your 5K time trial (Nov 28) and 10K test (Dec 19) times and every pace updates.
 - **Progress**: planned vs logged km per week, backup and restore, CSV export.
 - **Guide**: gym sessions, hill sprints, strides, heat and fuel.
 

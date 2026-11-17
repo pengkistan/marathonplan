@@ -211,14 +211,14 @@ function buildStart_(st, keep) {
   st.getRange('A3').setValue('Days to race').setFontWeight('bold');
   st.getRange('B3').setFormula('=MAX(0,DATE(2027,2,6)-TODAY())').setFontWeight('bold').setFontSize(14);
   st.getRange('A5').setValue('Your inputs (yellow cells; the app fills these too)').setFontWeight('bold').setFontSize(12).setFontColor(NAVY);
-  st.getRange('A6:A9').setValues([['Max heart rate (bpm)'], ['Starting VDOT (Base phase)'], ['5K race, Sat Nov 14: minutes / seconds'], ['10K test, Sat Dec 19: minutes / seconds']]);
+  st.getRange('A6:A9').setValues([['Max heart rate (bpm)'], ['Starting VDOT (Base phase)'], ['5K time trial, Sat Nov 28: minutes / seconds'], ['10K test, Sat Dec 19: minutes / seconds']]);
   st.getRange('B6:C9').setValues(keep || [[194, ''], [32, ''], ['', ''], ['', '']]);
   st.getRange('B6:B9').setBackground(YELLOW).setFontColor('#0000FF').setHorizontalAlignment('center');
   st.getRange('C8:C9').setBackground(YELLOW).setFontColor('#0000FF').setHorizontalAlignment('center');
   st.getRange('E6:E9').setValues([['Highest seen in your Strava data (10K, Aug 7, 2026).'], ['From your 5K 28:26 (Feb 4) and 10K 59:54 (Aug 7).'],
     ['Example: 27 and 50 for 27:50.'], ['Example: 58 and 30 for 58:30; 61 and 5 for 1:01:05.']]).setFontSize(9).setFontColor(MUTED);
   st.getRange('A11').setValue('What your tests say').setFontWeight('bold').setFontSize(12).setFontColor(NAVY);
-  st.getRange('A12:A17').setValues([['VDOT from 5K test'], ['VDOT from 10K test'], ['VDOT after the 5K race (weeks 4–9)'], ['Race-phase VDOT (weeks 10–15)'], ['Predicted half marathon'], ['Half-marathon pace']]);
+  st.getRange('A12:A17').setValues([['VDOT from 5K test'], ['VDOT from 10K test'], ['Build-phase VDOT, from the 5K (weeks 5–9)'], ['Race-phase VDOT (weeks 10–15)'], ['Predicted half marathon'], ['Half-marathon pace']]);
   st.getRange('B12:B17').setFormulas([
     ['=IF(N(B8)=0,"",MAX(30,29+SUMPRODUCT(--(Paces!$B$5:$B$15>=TIME(0,B8,N(C8))))))'],
     ['=IF(N(B9)=0,"",MAX(30,29+SUMPRODUCT(--(Paces!$C$5:$C$15>=TIME(0,B9,N(C9))))))'],
@@ -331,7 +331,7 @@ function buildGym_(gy) {
     ['Bounding', '3 × 20 m', 'From week 5'], ['Single-leg Romanian deadlift', '3 × 8 per leg', ''],
     ['Isometric hold (optional)', '6 × 5 s', 'Push hard against a fixed bar, split-squat or calf-raise position'], ['Core: plank, side plank, dead bug', '2 rounds', '']]);
   title('How the gym work progresses');
-  table([['Weeks', 'What to do', ''], ['1–2', 'Learn the movements', 'Moderate weights, 3 × 8 in Gym A'], ['3–9', 'Go heavy', '3 × 4–6; skip the sessions marked in test weeks 4 and 8'],
+  table([['Weeks', 'What to do', ''], ['1–2', 'Learn the movements', 'Moderate weights, 3 × 8 in Gym A'], ['3–9', 'Go heavy', '3 × 4–6; skip the sessions marked in test weeks 5 and 8'],
     ['10–13', 'Maintain', 'Same weights, 2 sets; half the jumps in Gym B'], ['14–15', 'Taper', 'Core only in week 14, nothing in race week']]);
   title('Flat sprints and strides');
   table([['What', 'How', 'Progression'], ['Flat sprints (instead of hill sprints)', 'Grass, track or flat road; build up 2–3 s, then about 8 s at 90–95% effort; walk back, rest 2–3 min', '2, 4, 6 × 8 s (weeks 1–3); 8 × 8 s (week 5); 8 × 10 s (weeks 6–7); 6 × 10 s to Jan 20'],
